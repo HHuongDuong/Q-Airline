@@ -1,0 +1,268 @@
+/* Q-Airline Brand Identity System */
+
+:root {
+    /* Primary Colors */
+    --qa-primary: #2B3A67;      /* Deep Navy - Main brand color */
+    --qa-secondary: #00A6A6;    /* Teal - Secondary brand color */
+    --qa-accent: #FF6B6B;       /* Coral - Accent color for CTAs */
+    
+    /* Neutral Colors */
+    --qa-dark: #1A1A2E;         /* Dark background */
+    --qa-light: #F7F7F7;        /* Light background */
+    --qa-gray: #6B7280;         /* Text gray */
+    
+    /* Typography */
+    --qa-font-primary: 'Montserrat', sans-serif;
+    --qa-font-secondary: 'Poppins', sans-serif;
+    
+    /* Spacing */
+    --qa-spacing-xs: 0.25rem;
+    --qa-spacing-sm: 0.5rem;
+    --qa-spacing-md: 1rem;
+    --qa-spacing-lg: 1.5rem;
+    --qa-spacing-xl: 2rem;
+    
+    /* Border Radius */
+    --qa-radius-sm: 4px;
+    --qa-radius-md: 8px;
+    --qa-radius-lg: 16px;
+    
+    /* Shadows */
+    --qa-shadow-sm: 0 2px 4px rgba(0, 0, 0, 0.1);
+    --qa-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+    --qa-shadow-lg: 0 10px 15px rgba(0, 0, 0, 0.1);
+}
+
+/* Base Styles */
+body {
+    font-family: var(--qa-font-primary);
+    color: var(--qa-dark);
+    background-color: var(--qa-light);
+    line-height: 1.6;
+}
+
+/* Typography */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--qa-font-secondary);
+    font-weight: 600;
+    color: var(--qa-primary);
+}
+
+/* Header & Navigation */
+.header {
+    background-color: var(--qa-primary);
+    box-shadow: var(--qa-shadow-md);
+}
+
+.navbar {
+    padding: var(--qa-spacing-md) var(--qa-spacing-xl);
+}
+
+.logo {
+    font-family: var(--qa-font-secondary);
+    font-size: 1.75rem;
+    font-weight: 700;
+    color: white;
+    text-decoration: none;
+    letter-spacing: 1px;
+}
+
+.nav-links a {
+    color: white;
+    font-weight: 500;
+    padding: var(--qa-spacing-sm) var(--qa-spacing-md);
+    border-radius: var(--qa-radius-sm);
+    transition: all 0.3s ease;
+}
+
+.nav-links a:hover {
+    background-color: var(--qa-secondary);
+    transform: translateY(-2px);
+}
+
+/* Buttons */
+.btn {
+    background-color: var(--qa-accent);
+    color: white;
+    padding: var(--qa-spacing-md) var(--qa-spacing-lg);
+    border-radius: var(--qa-radius-md);
+    font-weight: 600;
+    transition: all 0.3s ease;
+    border: none;
+    cursor: pointer;
+}
+
+.btn:hover {
+    background-color: #FF5252;
+    transform: translateY(-2px);
+    box-shadow: var(--qa-shadow-md);
+}
+
+.btn-secondary {
+    background-color: var(--qa-secondary);
+}
+
+.btn-secondary:hover {
+    background-color: #008B8B;
+}
+
+/* Cards */
+.card {
+    background-color: white;
+    border-radius: var(--qa-radius-lg);
+    box-shadow: var(--qa-shadow-md);
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: var(--qa-shadow-lg);
+}
+
+/* Forms */
+.form-control {
+    border: 2px solid #E5E7EB;
+    border-radius: var(--qa-radius-md);
+    padding: var(--qa-spacing-md);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    border-color: var(--qa-secondary);
+    box-shadow: 0 0 0 3px rgba(0, 166, 166, 0.1);
+}
+
+/* Flight Cards */
+.flight-card {
+    background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+    border-left: 4px solid var(--qa-secondary);
+}
+
+.flight-time {
+    color: var(--qa-primary);
+    font-weight: 700;
+}
+
+.flight-city {
+    color: var(--qa-gray);
+}
+
+/* Ticket Cards */
+.ticket-card {
+    border: 1px solid #E5E7EB;
+    border-radius: var(--qa-radius-lg);
+    overflow: hidden;
+}
+
+.ticket-header {
+    background: linear-gradient(135deg, var(--qa-primary) 0%, #3B4B7A 100%);
+}
+
+.ticket-status {
+    font-weight: 600;
+    letter-spacing: 0.5px;
+}
+
+/* Status Colors */
+.status-confirmed {
+    background-color: #E8F5E9;
+    color: #2E7D32;
+}
+
+.status-cancelled {
+    background-color: #FFEBEE;
+    color: #C62828;
+}
+
+.status-pending {
+    background-color: #FFF3E0;
+    color: #EF6C00;
+}
+
+/* Footer */
+.footer {
+    background-color: var(--qa-dark);
+    color: white;
+    padding: var(--qa-spacing-xl) 0;
+}
+
+.footer-section h3 {
+    color: var(--qa-secondary);
+    font-size: 1.2rem;
+    margin-bottom: var(--qa-spacing-md);
+}
+
+.footer-section a {
+    color: #E5E7EB;
+    transition: color 0.3s ease;
+}
+
+.footer-section a:hover {
+    color: var(--qa-secondary);
+}
+
+/* Hero Section */
+.hero {
+    background: linear-gradient(rgba(43, 58, 103, 0.8), rgba(43, 58, 103, 0.8)),
+                url('../images/hero-bg.jpg');
+    background-size: cover;
+    background-position: center;
+    color: white;
+    text-align: center;
+    padding: var(--qa-spacing-xl) 0;
+}
+
+.hero h1 {
+    color: white;
+    font-size: 3rem;
+    margin-bottom: var(--qa-spacing-md);
+}
+
+.hero p {
+    font-size: 1.2rem;
+    max-width: 600px;
+    margin: 0 auto;
+}
+
+/* Animations */
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-in {
+    animation: fadeIn 0.5s ease-out;
+}
+
+/* Responsive Design */
+@media (max-width: 768px) {
+    .navbar {
+        padding: var(--qa-spacing-sm);
+    }
+    
+    .hero h1 {
+        font-size: 2rem;
+    }
+    
+    .card {
+        margin: var(--qa-spacing-md);
+    }
+}
+
+/* Custom Scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+
+::-webkit-scrollbar-track {
+    background: var(--qa-light);
+}
+
+::-webkit-scrollbar-thumb {
+    background: var(--qa-primary);
+    border-radius: var(--qa-radius-sm);
+}
+
+::-webkit-scrollbar-thumb:hover {
+    background: var(--qa-secondary);
+} 

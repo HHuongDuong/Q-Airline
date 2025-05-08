@@ -1,0 +1,313 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Tickets - Q-Airline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/brand.css">
+    <style>
+        .tickets-container {
+            max-width: 1200px;
+            margin: var(--qa-spacing-xl) auto;
+            padding: 0 var(--qa-spacing-md);
+        }
+
+        .ticket-filters {
+            background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+            padding: var(--qa-spacing-lg);
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-lg);
+            margin-bottom: var(--qa-spacing-xl);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .filter-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--qa-spacing-md);
+            margin-bottom: var(--qa-spacing-md);
+        }
+
+        .ticket-list {
+            display: grid;
+            gap: var(--qa-spacing-md);
+        }
+
+        .ticket-card {
+            background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-md);
+            padding: var(--qa-spacing-lg);
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            align-items: center;
+            gap: var(--qa-spacing-xl);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--qa-secondary);
+        }
+
+        .ticket-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--qa-shadow-lg);
+        }
+
+        .ticket-info {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: var(--qa-spacing-md);
+        }
+
+        .ticket-route {
+            text-align: center;
+        }
+
+        .ticket-time {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--qa-primary);
+        }
+
+        .ticket-city {
+            color: var(--qa-gray);
+            font-size: 0.9rem;
+        }
+
+        .ticket-duration {
+            text-align: center;
+            color: var(--qa-gray);
+            font-size: 0.9rem;
+        }
+
+        .ticket-details {
+            display: flex;
+            flex-direction: column;
+            gap: var(--qa-spacing-sm);
+        }
+
+        .ticket-number {
+            font-weight: 600;
+            color: var(--qa-primary);
+        }
+
+        .ticket-status {
+            padding: var(--qa-spacing-xs) var(--qa-spacing-sm);
+            border-radius: var(--qa-radius-sm);
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-cancelled {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .status-completed {
+            background-color: #E3F2FD;
+            color: #1565C0;
+        }
+
+        .ticket-actions {
+            display: flex;
+            flex-direction: column;
+            gap: var(--qa-spacing-sm);
+        }
+
+        .btn-cancel {
+            padding: var(--qa-spacing-sm) var(--qa-spacing-md);
+            background-color: #FFEBEE;
+            color: #C62828;
+            border: 1px solid #C62828;
+            border-radius: var(--qa-radius-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-cancel:hover {
+            background-color: #C62828;
+            color: white;
+            transform: translateY(-2px);
+            box-shadow: var(--qa-shadow-md);
+        }
+
+        .btn-download {
+            padding: var(--qa-spacing-sm) var(--qa-spacing-md);
+            background-color: var(--qa-accent);
+            color: white;
+            border: none;
+            border-radius: var(--qa-radius-md);
+            cursor: pointer;
+            font-size: 0.9rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-download:hover {
+            background-color: #FF5252;
+            transform: translateY(-2px);
+            box-shadow: var(--qa-shadow-md);
+        }
+
+        .no-tickets {
+            text-align: center;
+            padding: var(--qa-spacing-xl);
+            background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-md);
+            color: var(--qa-gray);
+        }
+
+        @media (max-width: 768px) {
+            .ticket-card {
+                grid-template-columns: 1fr;
+                gap: var(--qa-spacing-md);
+            }
+
+            .ticket-info {
+                margin-bottom: var(--qa-spacing-md);
+            }
+
+            .ticket-actions {
+                flex-direction: row;
+                justify-content: flex-start;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="/" class="logo">Q-Airline</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/flights">Flights</a>
+                <a href="/tickets">My Tickets</a>
+                <a href="/login">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Tickets Container -->
+    <div class="tickets-container">
+        <!-- Ticket Filters -->
+        <div class="ticket-filters">
+            <form action="/tickets" method="GET">
+                <div class="filter-row">
+                    <div class="form-group">
+                        <label for="status">Status</label>
+                        <select id="status" name="status" class="form-control">
+                            <option value="">All Status</option>
+                            <option value="CONFIRMED">Confirmed</option>
+                            <option value="CANCELLED">Cancelled</option>
+                            <option value="COMPLETED">Completed</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <label for="dateFrom">From Date</label>
+                        <input type="date" id="dateFrom" name="dateFrom" class="form-control">
+                    </div>
+                    <div class="form-group">
+                        <label for="dateTo">To Date</label>
+                        <input type="date" id="dateTo" name="dateTo" class="form-control">
+                    </div>
+                </div>
+                <button type="submit" class="btn">Apply Filters</button>
+            </form>
+        </div>
+
+        <!-- Ticket List -->
+        <div class="ticket-list">
+            <!-- Sample Ticket Card -->
+            <div class="ticket-card animate-fade-in">
+                <div class="ticket-info">
+                    <div class="ticket-route">
+                        <div class="ticket-time">08:00</div>
+                        <div class="ticket-city">New York (JFK)</div>
+                    </div>
+                    <div class="ticket-duration">
+                        <div>2h 30m</div>
+                        <div>Direct</div>
+                    </div>
+                    <div class="ticket-route">
+                        <div class="ticket-time">10:30</div>
+                        <div class="ticket-city">London (LHR)</div>
+                    </div>
+                </div>
+                <div class="ticket-details">
+                    <div class="ticket-number">Ticket: T123456</div>
+                    <div class="ticket-status status-confirmed">Confirmed</div>
+                </div>
+                <div class="ticket-actions">
+                    <button class="btn-cancel">Cancel Ticket</button>
+                    <button class="btn-download">Download Ticket</button>
+                </div>
+            </div>
+
+            <!-- Another Sample Ticket Card -->
+            <div class="ticket-card animate-fade-in">
+                <div class="ticket-info">
+                    <div class="ticket-route">
+                        <div class="ticket-time">14:30</div>
+                        <div class="ticket-city">London (LHR)</div>
+                    </div>
+                    <div class="ticket-duration">
+                        <div>2h 30m</div>
+                        <div>Direct</div>
+                    </div>
+                    <div class="ticket-route">
+                        <div class="ticket-time">17:00</div>
+                        <div class="ticket-city">New York (JFK)</div>
+                    </div>
+                </div>
+                <div class="ticket-details">
+                    <div class="ticket-number">Ticket: T123457</div>
+                    <div class="ticket-status status-completed">Completed</div>
+                </div>
+                <div class="ticket-actions">
+                    <button class="btn-download">Download Ticket</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <ul>
+                    <li><a href="/about">Company Profile</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/baggage">Baggage Information</a></li>
+                    <li><a href="/refund">Refund Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="/terms">Terms & Conditions</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/cookies">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 

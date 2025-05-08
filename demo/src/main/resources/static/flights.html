@@ -1,0 +1,283 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Search Flights - Q-Airline</title>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/brand.css">
+    <style>
+        .flights-container {
+            max-width: 1200px;
+            margin: var(--qa-spacing-xl) auto;
+            padding: 0 var(--qa-spacing-md);
+        }
+
+        .search-form {
+            background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+            padding: var(--qa-spacing-xl);
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-lg);
+            margin-bottom: var(--qa-spacing-xl);
+            animation: fadeIn 0.5s ease-out;
+        }
+
+        .form-row {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: var(--qa-spacing-md);
+            margin-bottom: var(--qa-spacing-md);
+        }
+
+        .flight-list {
+            display: grid;
+            gap: var(--qa-spacing-md);
+        }
+
+        .flight-card {
+            background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-md);
+            padding: var(--qa-spacing-lg);
+            display: grid;
+            grid-template-columns: 2fr 1fr 1fr;
+            align-items: center;
+            gap: var(--qa-spacing-xl);
+            transition: all 0.3s ease;
+            border-left: 4px solid var(--qa-secondary);
+        }
+
+        .flight-card:hover {
+            transform: translateY(-5px);
+            box-shadow: var(--qa-shadow-lg);
+        }
+
+        .flight-info {
+            display: grid;
+            grid-template-columns: 1fr auto 1fr;
+            align-items: center;
+            gap: var(--qa-spacing-md);
+        }
+
+        .flight-route {
+            text-align: center;
+        }
+
+        .flight-time {
+            font-size: 1.2rem;
+            font-weight: 700;
+            color: var(--qa-primary);
+        }
+
+        .flight-city {
+            color: var(--qa-gray);
+            font-size: 0.9rem;
+        }
+
+        .flight-duration {
+            text-align: center;
+            color: var(--qa-gray);
+            font-size: 0.9rem;
+        }
+
+        .flight-price {
+            font-size: 1.5rem;
+            font-weight: bold;
+            color: var(--qa-primary);
+            text-align: right;
+        }
+
+        .flight-status {
+            padding: var(--qa-spacing-xs) var(--qa-spacing-sm);
+            border-radius: var(--qa-radius-sm);
+            font-size: 0.9rem;
+            text-align: center;
+            font-weight: 500;
+        }
+
+        .status-scheduled {
+            background-color: #E8F5E9;
+            color: #2E7D32;
+        }
+
+        .status-delayed {
+            background-color: #FFF3E0;
+            color: #EF6C00;
+        }
+
+        .status-cancelled {
+            background-color: #FFEBEE;
+            color: #C62828;
+        }
+
+        .btn-book {
+            padding: var(--qa-spacing-md) var(--qa-spacing-lg);
+            background-color: var(--qa-accent);
+            color: white;
+            border: none;
+            border-radius: var(--qa-radius-md);
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+
+        .btn-book:hover {
+            background-color: #FF5252;
+            transform: translateY(-2px);
+            box-shadow: var(--qa-shadow-md);
+        }
+
+        .no-flights {
+            text-align: center;
+            padding: var(--qa-spacing-xl);
+            background: linear-gradient(135deg, white 0%, #F8FAFC 100%);
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-md);
+            color: var(--qa-gray);
+        }
+
+        @media (max-width: 768px) {
+            .flight-card {
+                grid-template-columns: 1fr;
+                gap: var(--qa-spacing-md);
+            }
+
+            .flight-info {
+                margin-bottom: var(--qa-spacing-md);
+            }
+
+            .flight-price {
+                text-align: left;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <header class="header">
+        <nav class="navbar">
+            <a href="/" class="logo">Q-Airline</a>
+            <div class="nav-links">
+                <a href="/">Home</a>
+                <a href="/flights">Flights</a>
+                <a href="/tickets">My Tickets</a>
+                <a href="/login">Login</a>
+            </div>
+        </nav>
+    </header>
+
+    <!-- Flights Container -->
+    <div class="flights-container">
+        <!-- Search Form -->
+        <div class="search-form">
+            <form action="/flights/search" method="GET">
+                <div class="form-row">
+                    <div class="form-group">
+                        <label for="departureCity">From</label>
+                        <input type="text" id="departureCity" name="departureCity" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="arrivalCity">To</label>
+                        <input type="text" id="arrivalCity" name="arrivalCity" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="departureDate">Departure Date</label>
+                        <input type="date" id="departureDate" name="departureDate" class="form-control" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="passengers">Passengers</label>
+                        <input type="number" id="passengers" name="passengers" class="form-control" min="1" value="1" required>
+                    </div>
+                </div>
+                <button type="submit" class="btn">Search Flights</button>
+            </form>
+        </div>
+
+        <!-- Flight List -->
+        <div class="flight-list">
+            <!-- Sample Flight Card -->
+            <div class="flight-card animate-fade-in">
+                <div class="flight-info">
+                    <div class="flight-route">
+                        <div class="flight-time">08:00</div>
+                        <div class="flight-city">New York (JFK)</div>
+                    </div>
+                    <div class="flight-duration">
+                        <div>2h 30m</div>
+                        <div>Direct</div>
+                    </div>
+                    <div class="flight-route">
+                        <div class="flight-time">10:30</div>
+                        <div class="flight-city">London (LHR)</div>
+                    </div>
+                </div>
+                <div class="flight-details">
+                    <div class="flight-number">Flight: QA123</div>
+                    <div class="flight-status status-scheduled">Scheduled</div>
+                </div>
+                <div class="flight-booking">
+                    <div class="flight-price">$499</div>
+                    <button class="btn-book">Book Now</button>
+                </div>
+            </div>
+
+            <!-- Another Sample Flight Card -->
+            <div class="flight-card animate-fade-in">
+                <div class="flight-info">
+                    <div class="flight-route">
+                        <div class="flight-time">14:30</div>
+                        <div class="flight-city">New York (JFK)</div>
+                    </div>
+                    <div class="flight-duration">
+                        <div>2h 30m</div>
+                        <div>Direct</div>
+                    </div>
+                    <div class="flight-route">
+                        <div class="flight-time">17:00</div>
+                        <div class="flight-city">London (LHR)</div>
+                    </div>
+                </div>
+                <div class="flight-details">
+                    <div class="flight-number">Flight: QA456</div>
+                    <div class="flight-status status-delayed">Delayed</div>
+                </div>
+                <div class="flight-booking">
+                    <div class="flight-price">$599</div>
+                    <button class="btn-book">Book Now</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="footer-content">
+            <div class="footer-section">
+                <h3>About Us</h3>
+                <ul>
+                    <li><a href="/about">Company Profile</a></li>
+                    <li><a href="/careers">Careers</a></li>
+                    <li><a href="/contact">Contact Us</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Support</h3>
+                <ul>
+                    <li><a href="/faq">FAQ</a></li>
+                    <li><a href="/baggage">Baggage Information</a></li>
+                    <li><a href="/refund">Refund Policy</a></li>
+                </ul>
+            </div>
+            <div class="footer-section">
+                <h3>Legal</h3>
+                <ul>
+                    <li><a href="/terms">Terms & Conditions</a></li>
+                    <li><a href="/privacy">Privacy Policy</a></li>
+                    <li><a href="/cookies">Cookie Policy</a></li>
+                </ul>
+            </div>
+        </div>
+    </footer>
+</body>
+</html> 
