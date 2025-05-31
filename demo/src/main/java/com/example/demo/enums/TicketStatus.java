@@ -2,5 +2,7 @@ package com.example.demo.enums;
 
 public enum TicketStatus {
     CONFIRMED,
-    CANCELLED
+    CANCELLED,
+    USED,
+    EXPIRED
 } 

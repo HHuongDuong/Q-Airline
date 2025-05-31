@@ -3,9 +3,10 @@ package com.example.demo.entity;
 import com.example.demo.enums.FlightStatus;
 import jakarta.persistence.*;
 import lombok.Data;
+import org.hibernate.annotations.CreationTimestamp;
+import org.hibernate.annotations.UpdateTimestamp;
+
 import java.time.LocalDateTime;
-import java.util.ArrayList;
-import java.util.List;
 
 @Data
 @Entity
@@ -15,35 +16,39 @@ public class Flight {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @Column(unique = true, nullable = false)
+    @Column(name = "flight_number", unique = true, nullable = false)
     private String flightNumber;
 
-    @ManyToOne
-    @JoinColumn(name = "aircraft_id", nullable = false)
-    private Aircraft aircraft;
+    @Column(name = "departure_airport", nullable = false)
+    private String departureAirport;
 
-    private String departureCity;
-    private String arrivalCity;
+    @Column(name = "arrival_airport", nullable = false)
+    private String arrivalAirport;
+
+    @Column(name = "departure_time", nullable = false)
     private LocalDateTime departureTime;
+
+    @Column(name = "arrival_time", nullable = false)
     private LocalDateTime arrivalTime;
 
+    @Column(name = "total_seats")
+    private Integer totalSeats;
+
+    @Column(name = "available_seats")
+    private Integer availableSeats;
+
+    @Column(nullable = false)
+    private Double price;
+
     @Enumerated(EnumType.STRING)
-    private FlightStatus status;
+    @Column(nullable = false)
+    private FlightStatus status = FlightStatus.SCHEDULED;
 
-    @OneToMany(mappedBy = "flight", cascade = CascadeType.ALL)
-    private List<Ticket> tickets = new ArrayList<>();
-
+    @CreationTimestamp
+    @Column(name = "created_at", updatable = false)
     private LocalDateTime createdAt;
+
+    @UpdateTimestamp
+    @Column(name = "updated_at")
     private LocalDateTime updatedAt;
-
-    @PrePersist
-    protected void onCreate() {
-        createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
-    }
-
-    @PreUpdate
-    protected void onUpdate() {
-        updatedAt = LocalDateTime.now();
-    }
 } 

@@ -1,0 +1,367 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News - Q-Airline</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="css/brand.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .news-container {
+            max-width: 1200px;
+            margin: 4rem auto;
+            padding: var(--qa-spacing-xl);
+        }
+
+        .news-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: var(--qa-spacing-xl);
+        }
+
+        .news-header h2 {
+            color: var(--qa-primary);
+            font-family: var(--qa-font-secondary);
+            margin: 0;
+        }
+
+        .news-filters {
+            display: flex;
+            gap: var(--qa-spacing-md);
+        }
+
+        .filter-btn {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--qa-primary);
+            border-radius: var(--qa-radius-md);
+            background: transparent;
+            color: var(--qa-primary);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .filter-btn.active {
+            background-color: var(--qa-primary);
+            color: white;
+        }
+
+        .news-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+            gap: var(--qa-spacing-lg);
+        }
+
+        .news-card {
+            background: white;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-md);
+            overflow: hidden;
+            transition: transform 0.3s ease;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-card:hover {
+            transform: translateY(-2px);
+            box-shadow: var(--qa-shadow-lg);
+        }
+
+        .news-image {
+            width: 100%;
+            height: 200px;
+            object-fit: cover;
+        }
+
+        .news-content {
+            padding: var(--qa-spacing-lg);
+            flex-grow: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .news-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: var(--qa-primary);
+            color: white;
+            border-radius: var(--qa-radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: var(--qa-spacing-md);
+        }
+
+        .news-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            color: var(--qa-primary);
+            margin-bottom: var(--qa-spacing-sm);
+            line-height: 1.4;
+        }
+
+        .news-excerpt {
+            color: var(--qa-gray);
+            font-size: 0.875rem;
+            line-height: 1.6;
+            margin-bottom: var(--qa-spacing-md);
+            flex-grow: 1;
+        }
+
+        .news-meta {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            color: var(--qa-gray);
+            font-size: 0.875rem;
+            padding-top: var(--qa-spacing-md);
+            border-top: 1px solid #eee;
+        }
+
+        .news-date {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .news-author {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-read-more {
+            display: inline-flex;
+            align-items: center;
+            gap: 0.5rem;
+            color: var(--qa-accent);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .btn-read-more:hover {
+            color: var(--qa-primary);
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid var(--qa-primary);
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #dc3545;
+            padding: var(--qa-spacing-lg);
+            display: none;
+        }
+
+        .no-news {
+            text-align: center;
+            padding: var(--qa-spacing-xl);
+            color: var(--qa-gray);
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .news-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .news-header {
+                flex-direction: column;
+                gap: var(--qa-spacing-md);
+                align-items: flex-start;
+            }
+
+            .news-filters {
+                width: 100%;
+                overflow-x: auto;
+                padding-bottom: var(--qa-spacing-sm);
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="qa-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="nav-links">
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="flights.html">Flights</a></li>
+                    <li><a href="tickets.html">My Tickets</a></li>
+                    <li><a class="active" href="news.html">News</a></li>
+                    <li><a href="login.html">Login</a></li>
+                    <li><a href="register.html">Register</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- News Container -->
+    <div class="news-container">
+        <div class="news-header">
+            <h2>Latest News</h2>
+            <div class="news-filters">
+                <button class="filter-btn active" data-filter="all">All</button>
+                <button class="filter-btn" data-filter="announcements">Announcements</button>
+                <button class="filter-btn" data-filter="updates">Updates</button>
+                <button class="filter-btn" data-filter="promotions">Promotions</button>
+            </div>
+        </div>
+
+        <div id="newsList">
+            <!-- News articles will be loaded here -->
+            <div class="loading-spinner"></div>
+            <div class="error-message">Failed to load news. Please try again later.</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="qa-footer">
+        <div class="container">
+            <div class="row">
+                <div class="col-md-4">
+                    <h5>Q-Airline</h5>
+                    <p>Your trusted partner in air travel.</p>
+                </div>
+                <div class="col-md-4">
+                    <h5>Quick Links</h5>
+                    <ul class="list-unstyled">
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="col-md-4">
+                    <h5>Contact Us</h5>
+                    <p>Email: info@qairline.com<br>
+                    Phone: +1 234 567 890</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // DOM Elements
+        const newsList = document.getElementById('newsList');
+        const filterButtons = document.querySelectorAll('.filter-btn');
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const errorMessage = document.querySelector('.error-message');
+
+        // State
+        let news = [];
+        let currentFilter = 'all';
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'short', 
+                day: 'numeric'
+            };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Create news card
+        function createNewsCard(article) {
+            return `
+                <div class="news-card" data-category="${article.category.toLowerCase()}">
+                    <img src="${article.imageUrl}" alt="${article.title}" class="news-image">
+                    <div class="news-content">
+                        <span class="news-category">${article.category}</span>
+                        <h3 class="news-title">${article.title}</h3>
+                        <p class="news-excerpt">${article.excerpt}</p>
+                        <div class="news-meta">
+                            <div class="news-date">
+                                <i class="far fa-calendar"></i>
+                                ${formatDate(article.publishDate)}
+                            </div>
+                            <div class="news-author">
+                                <i class="far fa-user"></i>
+                                ${article.author}
+                            </div>
+                        </div>
+                        <a href="news-detail.html?id=${article.id}" class="btn-read-more">
+                            Read More
+                            <i class="fas fa-arrow-right"></i>
+                        </a>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Filter news
+        function filterNews() {
+            const filteredNews = news.filter(article => {
+                if (currentFilter === 'all') return true;
+                return article.category.toLowerCase() === currentFilter;
+            });
+
+            if (filteredNews.length === 0) {
+                newsList.innerHTML = `
+                    <div class="no-news">
+                        <i class="fas fa-newspaper fa-3x mb-3"></i>
+                        <p>No news articles found</p>
+                    </div>
+                `;
+            } else {
+                newsList.innerHTML = filteredNews.map(createNewsCard).join('');
+            }
+        }
+
+        // Load news
+        async function loadNews() {
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            try {
+                const response = await fetch('/api/news');
+
+                if (!response.ok) {
+                    throw new Error('Failed to load news');
+                }
+
+                news = await response.json();
+                filterNews();
+            } catch (error) {
+                console.error('Error loading news:', error);
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Event listeners
+        filterButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                filterButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                currentFilter = button.dataset.filter;
+                filterNews();
+            });
+        });
+
+        // Initial load
+        loadNews();
+    </script>
+</body>
+</html> 

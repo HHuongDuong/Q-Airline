@@ -12,19 +12,31 @@ public class News {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
+    @Column(nullable = false)
     private String title;
-    
-    @Column(columnDefinition = "TEXT")
+
+    @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
-    
-    private LocalDateTime publishedAt;
+
+    @Column(nullable = false)
+    private String type;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "author_id", nullable = false)
+    private User author;
+
+    @Column(nullable = false)
+    private boolean active;
+
+    @Column(nullable = false)
     private LocalDateTime createdAt;
+
+    @Column
     private LocalDateTime updatedAt;
 
     @PrePersist
     protected void onCreate() {
         createdAt = LocalDateTime.now();
-        updatedAt = LocalDateTime.now();
     }
 
     @PreUpdate

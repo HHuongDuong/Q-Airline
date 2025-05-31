@@ -5,7 +5,8 @@ import com.example.demo.entity.Aircraft;
 import com.example.demo.enums.FlightStatus;
 import com.example.demo.repository.FlightRepository;
 import com.example.demo.service.FlightService;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.demo.exception.ResourceNotFoundException;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -14,11 +15,11 @@ import java.util.List;
 import java.util.Optional;
 
 @Service
+@RequiredArgsConstructor
 @Transactional
 public class FlightServiceImpl implements FlightService {
 
-    @Autowired
-    private FlightRepository flightRepository;
+    private final FlightRepository flightRepository;
 
     @Override
     public Flight createFlight(Flight flight) {
@@ -73,13 +74,11 @@ public class FlightServiceImpl implements FlightService {
     }
 
     @Override
+    @Transactional
     public Flight updateFlightStatus(Long id, FlightStatus status) {
-        Optional<Flight> flightOpt = flightRepository.findById(id);
-        if (flightOpt.isPresent()) {
-            Flight flight = flightOpt.get();
-            flight.setStatus(status);
-            return flightRepository.save(flight);
-        }
-        throw new RuntimeException("Flight not found with id: " + id);
+        Flight flight = flightRepository.findById(id)
+            .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + id));
+        flight.setStatus(status);
+        return flightRepository.save(flight);
     }
 } 

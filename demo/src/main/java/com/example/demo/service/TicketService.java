@@ -18,4 +18,6 @@ public interface TicketService {
     List<Ticket> getTicketsByStatus(TicketStatus status);
     List<Ticket> getUserTicketsByStatus(User user, TicketStatus status);
     Ticket cancelTicket(Long id);
+    Ticket updateTicketStatus(Long ticketId, TicketStatus status);
+    boolean isTicketAvailable(Long ticketId);
 } 

@@ -1,0 +1,326 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>News Article - Q-Airline</title>
+    <link rel="stylesheet" href="css/brand.css">
+    <style>
+        .article-container {
+            max-width: 900px;
+            margin: 4rem auto;
+            padding: var(--qa-spacing-xl);
+        }
+
+        .article-header {
+            margin-bottom: var(--qa-spacing-xl);
+        }
+
+        .article-category {
+            display: inline-block;
+            padding: 0.25rem 0.75rem;
+            background-color: var(--qa-primary);
+            color: white;
+            border-radius: var(--qa-radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+            margin-bottom: var(--qa-spacing-md);
+        }
+
+        .article-title {
+            font-size: 2.5rem;
+            font-weight: 700;
+            color: var(--qa-primary);
+            margin-bottom: var(--qa-spacing-md);
+            line-height: 1.2;
+        }
+
+        .article-meta {
+            display: flex;
+            align-items: center;
+            gap: var(--qa-spacing-lg);
+            color: var(--qa-gray);
+            font-size: 0.875rem;
+            margin-bottom: var(--qa-spacing-lg);
+        }
+
+        .meta-item {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .article-image {
+            width: 100%;
+            height: 400px;
+            object-fit: cover;
+            border-radius: var(--qa-radius-lg);
+            margin-bottom: var(--qa-spacing-xl);
+        }
+
+        .article-content {
+            font-size: 1.125rem;
+            line-height: 1.8;
+            color: #333;
+        }
+
+        .article-content p {
+            margin-bottom: var(--qa-spacing-lg);
+        }
+
+        .article-content h2 {
+            font-size: 1.75rem;
+            font-weight: 600;
+            color: var(--qa-primary);
+            margin: var(--qa-spacing-xl) 0 var(--qa-spacing-lg);
+        }
+
+        .article-content h3 {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--qa-primary);
+            margin: var(--qa-spacing-lg) 0 var(--qa-spacing-md);
+        }
+
+        .article-content ul, .article-content ol {
+            margin-bottom: var(--qa-spacing-lg);
+            padding-left: var(--qa-spacing-xl);
+        }
+
+        .article-content li {
+            margin-bottom: var(--qa-spacing-sm);
+        }
+
+        .article-content blockquote {
+            border-left: 4px solid var(--qa-primary);
+            padding: var(--qa-spacing-md) var(--qa-spacing-lg);
+            margin: var(--qa-spacing-lg) 0;
+            background-color: #f8f9fa;
+            font-style: italic;
+        }
+
+        .article-content img {
+            max-width: 100%;
+            height: auto;
+            border-radius: var(--qa-radius-md);
+            margin: var(--qa-spacing-lg) 0;
+        }
+
+        .article-tags {
+            display: flex;
+            gap: var(--qa-spacing-sm);
+            margin-top: var(--qa-spacing-xl);
+            padding-top: var(--qa-spacing-lg);
+            border-top: 1px solid #eee;
+        }
+
+        .tag {
+            padding: 0.25rem 0.75rem;
+            background-color: #f8f9fa;
+            border-radius: var(--qa-radius-sm);
+            color: var(--qa-gray);
+            font-size: 0.875rem;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .tag:hover {
+            background-color: var(--qa-primary);
+            color: white;
+        }
+
+        .loading-spinner {
+            display: none;
+            width: 2rem;
+            height: 2rem;
+            border: 3px solid #f3f3f3;
+            border-radius: 50%;
+            border-top: 3px solid var(--qa-primary);
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+
+        .error-message {
+            text-align: center;
+            color: #dc3545;
+            padding: var(--qa-spacing-lg);
+            display: none;
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .article-container {
+                padding: var(--qa-spacing-lg);
+            }
+
+            .article-title {
+                font-size: 2rem;
+            }
+
+            .article-image {
+                height: 300px;
+            }
+
+            .article-meta {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: var(--qa-spacing-sm);
+            }
+        }
+
+        /* Custom Icons */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.125em;
+            fill: currentColor;
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="qa-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <ul class="nav-links">
+                <li><a href="index.html">Home</a></li>
+                <li><a href="flights.html">Flights</a></li>
+                <li><a href="tickets.html">My Tickets</a></li>
+                <li><a class="active" href="news.html">News</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Article Container -->
+    <div class="article-container">
+        <div id="articleContent">
+            <!-- Article content will be loaded here -->
+            <div class="loading-spinner"></div>
+            <div class="error-message">Failed to load article. Please try again later.</div>
+        </div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="qa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>Q-Airline</h5>
+                    <p>Your trusted partner in air travel.</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Contact Us</h5>
+                    <p>Email: info@qairline.com<br>
+                    Phone: +1 234 567 890</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        // DOM Elements
+        const articleContent = document.getElementById('articleContent');
+        const loadingSpinner = document.querySelector('.loading-spinner');
+        const errorMessage = document.querySelector('.error-message');
+
+        // Format date
+        function formatDate(dateString) {
+            const options = { 
+                year: 'numeric', 
+                month: 'long', 
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return new Date(dateString).toLocaleDateString('en-US', options);
+        }
+
+        // Load article
+        async function loadArticle() {
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            try {
+                const urlParams = new URLSearchParams(window.location.search);
+                const articleId = urlParams.get('id');
+
+                if (!articleId) {
+                    throw new Error('Article ID not provided');
+                }
+
+                const response = await fetch(`/api/news/${articleId}`);
+
+                if (!response.ok) {
+                    throw new Error('Failed to load article');
+                }
+
+                const article = await response.json();
+
+                // Update page title
+                document.title = `${article.title} - Q-Airline`;
+
+                // Render article
+                articleContent.innerHTML = `
+                    <div class="article-header">
+                        <span class="article-category">${article.category}</span>
+                        <h1 class="article-title">${article.title}</h1>
+                        <div class="article-meta">
+                            <div class="meta-item">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
+                                </svg>
+                                ${formatDate(article.publishDate)}
+                            </div>
+                            <div class="meta-item">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
+                                </svg>
+                                ${article.author}
+                            </div>
+                            <div class="meta-item">
+                                <svg class="icon" viewBox="0 0 24 24">
+                                    <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
+                                </svg>
+                                ${article.readingTime} min read
+                            </div>
+                        </div>
+                    </div>
+                    <img src="${article.imageUrl}" alt="${article.title}" class="article-image">
+                    <div class="article-content">
+                        ${article.content}
+                    </div>
+                    <div class="article-tags">
+                        ${article.tags.map(tag => `
+                            <a href="news.html?tag=${tag}" class="tag">#${tag}</a>
+                        `).join('')}
+                    </div>
+                `;
+            } catch (error) {
+                console.error('Error loading article:', error);
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        // Initial load
+        loadArticle();
+    </script>
+</body>
+</html> 

@@ -3,114 +3,430 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Q-Airline - Your Journey Begins Here</title>
-    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <title>Q-Airline - Your Trusted Air Travel Partner</title>
     <link rel="stylesheet" href="css/brand.css">
+    <style>
+        .hero {
+            background: linear-gradient(rgba(0, 0, 0, 0.5), rgba(0, 0, 0, 0.5)), url('images/hero-bg.jpg');
+            background-size: cover;
+            background-position: center;
+            height: 600px;
+            display: flex;
+            align-items: center;
+            text-align: center;
+            color: white;
+        }
+
+        .hero-content {
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            font-weight: 700;
+        }
+
+        .hero p {
+            font-size: 1.25rem;
+            margin-bottom: 2rem;
+        }
+
+        .search-box {
+            background: white;
+            padding: 2rem;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .search-form {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .form-group {
+            margin-bottom: 1rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--qa-gray);
+        }
+
+        .form-control {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--qa-radius-sm);
+            font-size: 1rem;
+        }
+
+        .btn-search {
+            background-color: var(--qa-primary);
+            color: white;
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .btn-search:hover {
+            background-color: var(--qa-primary-dark);
+        }
+
+        .features {
+            padding: 4rem 0;
+            background-color: #f8f9fa;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .feature-card {
+            text-align: center;
+            padding: 2rem;
+            background: white;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+        }
+
+        .feature-icon {
+            width: 64px;
+            height: 64px;
+            margin: 0 auto 1rem;
+        }
+
+        .feature-card h3 {
+            color: var(--qa-primary);
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--qa-gray);
+        }
+
+        .destinations {
+            padding: 4rem 0;
+        }
+
+        .section-title {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .section-title h2 {
+            color: var(--qa-primary);
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .destinations-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .destination-card {
+            position: relative;
+            border-radius: var(--qa-radius-lg);
+            overflow: hidden;
+            height: 300px;
+        }
+
+        .destination-card img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+        }
+
+        .destination-info {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 1.5rem;
+            background: linear-gradient(transparent, rgba(0, 0, 0, 0.8));
+            color: white;
+        }
+
+        .destination-info h3 {
+            margin-bottom: 0.5rem;
+        }
+
+        .destination-info p {
+            margin: 0;
+            opacity: 0.9;
+        }
+
+        .newsletter {
+            background-color: var(--qa-primary);
+            color: white;
+            padding: 4rem 0;
+            text-align: center;
+        }
+
+        .newsletter-content {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 0 20px;
+        }
+
+        .newsletter h2 {
+            margin-bottom: 1rem;
+        }
+
+        .newsletter p {
+            margin-bottom: 2rem;
+            opacity: 0.9;
+        }
+
+        .newsletter-form {
+            display: flex;
+            gap: 1rem;
+            max-width: 500px;
+            margin: 0 auto;
+        }
+
+        .newsletter-form input {
+            flex: 1;
+            padding: 0.75rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            font-size: 1rem;
+        }
+
+        .newsletter-form button {
+            background-color: white;
+            color: var(--qa-primary);
+            padding: 0.75rem 2rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s;
+        }
+
+        .newsletter-form button:hover {
+            background-color: #f8f9fa;
+        }
+
+        @media (max-width: 768px) {
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+
+            .search-form {
+                grid-template-columns: 1fr;
+            }
+
+            .newsletter-form {
+                flex-direction: column;
+            }
+
+            .newsletter-form button {
+                width: 100%;
+            }
+        }
+
+        /* Custom Icons */
+        .icon {
+            display: inline-block;
+            width: 1em;
+            height: 1em;
+            vertical-align: -0.125em;
+            fill: currentColor;
+        }
+    </style>
 </head>
 <body>
-    <!-- Header -->
-    <header class="header">
-        <nav class="navbar">
-            <a href="/" class="logo">Q-Airline</a>
-            <div class="nav-links">
-                <a href="/">Home</a>
-                <a href="/flights">Flights</a>
-                <a href="/tickets">My Tickets</a>
-                <a href="/login">Login</a>
-            </div>
-        </nav>
-    </header>
+    <!-- Navigation -->
+    <nav class="qa-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <ul class="nav-links">
+                <li><a class="active" href="index.html">Home</a></li>
+                <li><a href="flights.html">Flights</a></li>
+                <li><a href="tickets.html">My Tickets</a></li>
+                <li><a href="news.html">News</a></li>
+                <li><a href="login.html">Login</a></li>
+                <li><a href="register.html">Register</a></li>
+            </ul>
+        </div>
+    </nav>
 
     <!-- Hero Section -->
-    <section class="hero animate-fade-in">
+    <section class="hero">
         <div class="hero-content">
             <h1>Welcome to Q-Airline</h1>
-            <p>Your journey begins with us. Discover the world with comfort and style.</p>
+            <p>Your trusted partner in air travel. Experience comfort, safety, and exceptional service.</p>
+            <div class="search-box">
+                <form class="search-form" id="searchForm">
+                    <div class="form-group">
+                        <label for="from">From</label>
+                        <input type="text" class="form-control" id="from" placeholder="Departure City">
+                    </div>
+                    <div class="form-group">
+                        <label for="to">To</label>
+                        <input type="text" class="form-control" id="to" placeholder="Arrival City">
+                    </div>
+                    <div class="form-group">
+                        <label for="departure">Departure Date</label>
+                        <input type="date" class="form-control" id="departure">
+                    </div>
+                    <div class="form-group">
+                        <label for="return">Return Date</label>
+                        <input type="date" class="form-control" id="return">
+                    </div>
+                    <div class="form-group">
+                        <label for="passengers">Passengers</label>
+                        <select class="form-control" id="passengers">
+                            <option value="1">1 Adult</option>
+                            <option value="2">2 Adults</option>
+                            <option value="3">3 Adults</option>
+                            <option value="4">4 Adults</option>
+                        </select>
+                    </div>
+                    <div class="form-group">
+                        <button type="submit" class="btn-search">Search Flights</button>
+                    </div>
+                </form>
+            </div>
         </div>
     </section>
 
-    <!-- Search Form -->
-    <section class="search-section">
-        <div class="card search-form">
-            <form action="/flights/search" method="GET">
-                <div class="form-row">
-                    <div class="form-group">
-                        <label for="departureCity">From</label>
-                        <input type="text" id="departureCity" name="departureCity" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="arrivalCity">To</label>
-                        <input type="text" id="arrivalCity" name="arrivalCity" class="form-control" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="departureDate">Departure Date</label>
-                        <input type="date" id="departureDate" name="departureDate" class="form-control" required>
-                    </div>
+    <!-- Features Section -->
+    <section class="features">
+        <div class="features-grid">
+            <div class="feature-card">
+                <svg class="feature-icon" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <h3>24/7 Support</h3>
+                <p>Round-the-clock customer service to assist you with any queries or concerns.</p>
+            </div>
+            <div class="feature-card">
+                <svg class="feature-icon" viewBox="0 0 24 24">
+                    <path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/>
+                </svg>
+                <h3>Safe Travel</h3>
+                <p>Your safety is our top priority with state-of-the-art security measures.</p>
+            </div>
+            <div class="feature-card">
+                <svg class="feature-icon" viewBox="0 0 24 24">
+                    <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm-1-13h2v6h-2zm0 8h2v2h-2z"/>
+                </svg>
+                <h3>Best Prices</h3>
+                <p>Competitive prices and special deals for our valued customers.</p>
+            </div>
+        </div>
+    </section>
+
+    <!-- Destinations Section -->
+    <section class="destinations">
+        <div class="section-title">
+            <h2>Popular Destinations</h2>
+            <p>Explore our most popular flight destinations</p>
+        </div>
+        <div class="destinations-grid">
+            <div class="destination-card">
+                <img src="images/destination1.jpg" alt="New York">
+                <div class="destination-info">
+                    <h3>New York</h3>
+                    <p>From $299</p>
                 </div>
-                <button type="submit" class="btn">Search Flights</button>
+            </div>
+            <div class="destination-card">
+                <img src="images/destination2.jpg" alt="London">
+                <div class="destination-info">
+                    <h3>London</h3>
+                    <p>From $399</p>
+                </div>
+            </div>
+            <div class="destination-card">
+                <img src="images/destination3.jpg" alt="Tokyo">
+                <div class="destination-info">
+                    <h3>Tokyo</h3>
+                    <p>From $499</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Newsletter Section -->
+    <section class="newsletter">
+        <div class="newsletter-content">
+            <h2>Subscribe to Our Newsletter</h2>
+            <p>Stay updated with our latest deals and offers</p>
+            <form class="newsletter-form" id="newsletterForm">
+                <input type="email" placeholder="Enter your email" required>
+                <button type="submit">Subscribe</button>
             </form>
         </div>
     </section>
 
-    <!-- News Section -->
-    <section class="news-section">
-        <h2>Latest News</h2>
-        <div class="news-grid">
-            <article class="card news-card animate-fade-in">
-                <img src="images/news1.jpg" alt="News Image">
-                <div class="news-content">
-                    <h3>New Routes Added</h3>
-                    <p>We're excited to announce new routes to popular destinations...</p>
-                    <span class="news-date">March 15, 2024</span>
-                </div>
-            </article>
-            <article class="card news-card animate-fade-in">
-                <img src="images/news2.jpg" alt="News Image">
-                <div class="news-content">
-                    <h3>Special Offers</h3>
-                    <p>Book your summer vacation now and get up to 30% off...</p>
-                    <span class="news-date">March 10, 2024</span>
-                </div>
-            </article>
-            <article class="card news-card animate-fade-in">
-                <img src="images/news3.jpg" alt="News Image">
-                <div class="news-content">
-                    <h3>Fleet Update</h3>
-                    <p>We've added new aircraft to our fleet for better comfort...</p>
-                    <span class="news-date">March 5, 2024</span>
-                </div>
-            </article>
-        </div>
-    </section>
-
     <!-- Footer -->
-    <footer class="footer">
-        <div class="footer-content">
-            <div class="footer-section">
-                <h3>About Us</h3>
-                <ul>
-                    <li><a href="/about">Company Profile</a></li>
-                    <li><a href="/careers">Careers</a></li>
-                    <li><a href="/contact">Contact Us</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Support</h3>
-                <ul>
-                    <li><a href="/faq">FAQ</a></li>
-                    <li><a href="/baggage">Baggage Information</a></li>
-                    <li><a href="/refund">Refund Policy</a></li>
-                </ul>
-            </div>
-            <div class="footer-section">
-                <h3>Legal</h3>
-                <ul>
-                    <li><a href="/terms">Terms & Conditions</a></li>
-                    <li><a href="/privacy">Privacy Policy</a></li>
-                    <li><a href="/cookies">Cookie Policy</a></li>
-                </ul>
+    <footer class="qa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>Q-Airline</h5>
+                    <p>Your trusted partner in air travel.</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Contact Us</h5>
+                    <p>Email: info@qairline.com<br>
+                    Phone: +1 234 567 890</p>
+                </div>
             </div>
         </div>
     </footer>
+
+    <script>
+        // Search form handling
+        document.getElementById('searchForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const from = document.getElementById('from').value;
+            const to = document.getElementById('to').value;
+            const departure = document.getElementById('departure').value;
+            const returnDate = document.getElementById('return').value;
+            const passengers = document.getElementById('passengers').value;
+
+            // Redirect to flights page with search parameters
+            window.location.href = `flights.html?from=${from}&to=${to}&departure=${departure}&return=${returnDate}&passengers=${passengers}`;
+        });
+
+        // Newsletter form handling
+        document.getElementById('newsletterForm').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const email = this.querySelector('input[type="email"]').value;
+            
+            // Here you would typically send this to your backend
+            alert('Thank you for subscribing to our newsletter!');
+            this.reset();
+        });
+    </script>
 </body>
 </html> 

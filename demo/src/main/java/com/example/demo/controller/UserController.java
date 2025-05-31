@@ -1,7 +1,6 @@
 package com.example.demo.controller;
 
 import com.example.demo.entity.User;
-import com.example.demo.enums.UserRole;
 import com.example.demo.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
@@ -16,6 +15,16 @@ public class UserController {
     @Autowired
     private UserService userService;
 
+    @GetMapping
+    public ResponseEntity<List<User>> getAllUsers() {
+        return ResponseEntity.ok(userService.getAllUsers());
+    }
+
+    @GetMapping("/{id}")
+    public ResponseEntity<User> getUserById(@PathVariable Long id) {
+        return ResponseEntity.ok(userService.getUserById(id));
+    }
+
     @PostMapping
     public ResponseEntity<User> createUser(@RequestBody User user) {
         return ResponseEntity.ok(userService.createUser(user));
@@ -23,21 +32,13 @@ public class UserController {
 
     @PutMapping("/{id}")
     public ResponseEntity<User> updateUser(@PathVariable Long id, @RequestBody User user) {
-        user.setId(id);
-        return ResponseEntity.ok(userService.updateUser(user));
+        return ResponseEntity.ok(userService.updateUser(id, user));
     }
 
     @DeleteMapping("/{id}")
     public ResponseEntity<Void> deleteUser(@PathVariable Long id) {
         userService.deleteUser(id);
         return ResponseEntity.ok().build();
-    }
-
-    @GetMapping("/{id}")
-    public ResponseEntity<User> getUserById(@PathVariable Long id) {
-        return userService.getUserById(id)
-                .map(ResponseEntity::ok)
-                .orElse(ResponseEntity.notFound().build());
     }
 
     @GetMapping("/username/{username}")
@@ -54,14 +55,9 @@ public class UserController {
                 .orElse(ResponseEntity.notFound().build());
     }
 
-    @GetMapping
-    public ResponseEntity<List<User>> getAllUsers() {
-        return ResponseEntity.ok(userService.getAllUsers());
-    }
-
     @GetMapping("/role/{role}")
     public ResponseEntity<List<User>> getUsersByRole(@PathVariable String role) {
-        return ResponseEntity.ok(userService.getUsersByRole(UserRole.valueOf(role.toUpperCase())));
+        return ResponseEntity.ok(userService.getUsersByRole(role));
     }
 
     @GetMapping("/check/username/{username}")
