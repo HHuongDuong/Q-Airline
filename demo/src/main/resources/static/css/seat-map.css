@@ -75,6 +75,54 @@
     color: white;
 }
 
+.seat.maintenance {
+    background-color: var(--qa-warning);
+    border-color: var(--qa-warning);
+    color: white;
+    cursor: not-allowed;
+}
+
+.seat.blocked {
+    background-color: var(--qa-gray);
+    border-color: var(--qa-gray);
+    color: white;
+    cursor: not-allowed;
+}
+
+/* Seat Types */
+.seat.economy {
+    border-style: solid;
+}
+
+.seat.business {
+    border-style: double;
+}
+
+.seat.first {
+    border-width: 3px;
+}
+
+.seat.premium-economy {
+    border-style: dashed;
+}
+
+/* Special Seats */
+.seat.extra-legroom::after {
+    content: 'EL';
+    position: absolute;
+    bottom: -15px;
+    font-size: 8px;
+    color: var(--qa-primary);
+}
+
+.seat.emergency-exit::after {
+    content: 'EE';
+    position: absolute;
+    bottom: -15px;
+    font-size: 8px;
+    color: var(--qa-danger);
+}
+
 /* Aisle */
 .aisle {
     width: 40px;

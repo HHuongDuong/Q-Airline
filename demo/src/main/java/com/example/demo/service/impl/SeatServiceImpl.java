@@ -25,7 +25,6 @@ public class SeatServiceImpl implements SeatService {
 
     private static final String SEAT_NOT_FOUND = "Seat not found";
     private final SeatRepository seatRepository;
-    private final FlightRepository flightRepository;
 
     @Override
     public Seat blockSeat(Long seatId) {
@@ -99,26 +98,20 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public Seat getSeatMap(Long flightId) {
-        return seatRepository.findByFlight_Id(flightId).stream()
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
+    public List<SeatMapDTO> getSeatMap(Long flightId) {
+        List<Seat> seats = seatRepository.findByFlight_Id(flightId);
+        return seats.stream()
+                .map(this::convertToSeatMapDTO)
+                .collect(Collectors.toList());
     }
 
     @Override
-    public Seat getSeatMapWithSelectedSeats(Long flightId, List<String> selectedSeatNumbers) {
-        return seatRepository.findByFlight_Id(flightId).stream()
-                .filter(seat -> selectedSeatNumbers.contains(seat.getSeatNumber()))
-                .findFirst()
-                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
-    }
-
-    @Override
-    public boolean isSeatAvailable(Long flightId, String seatNumber) {
-        return seatRepository.findByFlight_IdAndSeatNumber(flightId, seatNumber).stream()
-                .findFirst()
-                .map(seat -> seat.getStatus() == SeatStatus.AVAILABLE)
-                .orElse(false);
+    public List<SeatMapDTO> getSeatMapWithSelectedSeats(Long flightId, List<String> selectedSeatNumbers) {
+        List<SeatMapDTO> seatMap = getSeatMap(flightId);
+        seatMap.forEach(seat -> 
+            seat.setSelected(selectedSeatNumbers.contains(seat.getSeatNumber()))
+        );
+        return seatMap;
     }
 
     @Override
@@ -241,8 +234,8 @@ public class SeatServiceImpl implements SeatService {
                 .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
     }
 
-    private SeatDTO convertToDTO(Seat seat) {
-        SeatDTO dto = new SeatDTO();
+    private SeatMapDTO convertToSeatMapDTO(Seat seat) {
+        SeatMapDTO dto = new SeatMapDTO();
         dto.setId(seat.getId());
         dto.setFlightId(seat.getFlight().getId());
         dto.setSeatNumber(seat.getSeatNumber());
@@ -250,8 +243,10 @@ public class SeatServiceImpl implements SeatService {
         dto.setStatus(seat.getStatus());
         dto.setPrice(seat.getPrice());
         dto.setHasExtraLegroom(seat.getHasExtraLegroom());
-        dto.setEmergencyExit(seat.getIsEmergencyExit());
+        dto.setIsEmergencyExit(seat.getIsEmergencyExit());
         dto.setRow(seat.getRow());
+        dto.setColumn(seat.getColumn());
+        dto.setSelected(false);
         return dto;
     }
 } 

@@ -401,20 +401,36 @@
         }
 
         // Create seat map
-        function createSeatMap(rows, cols, occupiedSeats) {
+        function createSeatMap(seatMapData) {
             let seatMap = '';
+            const rows = Math.max(...seatMapData.map(seat => seat.row));
+            const cols = Math.max(...seatMapData.map(seat => seat.column));
+
             for (let row = 1; row <= rows; row++) {
                 seatMap += '<div class="seat-row">';
                 for (let col = 1; col <= cols; col++) {
-                    const seatNumber = `${row}${String.fromCharCode(64 + col)}`;
-                    const isOccupied = occupiedSeats.includes(seatNumber);
-                    seatMap += `
-                        <div class="seat ${isOccupied ? 'occupied' : 'available'}" 
-                             data-seat="${seatNumber}"
-                             ${isOccupied ? 'disabled' : ''}>
-                            ${seatNumber}
-                        </div>
-                    `;
+                    const seat = seatMapData.find(s => s.row === row && s.column === col);
+                    if (seat) {
+                        const classes = [
+                            'seat',
+                            seat.status.toLowerCase(),
+                            seat.seatType.toLowerCase(),
+                            seat.hasExtraLegroom ? 'extra-legroom' : '',
+                            seat.isEmergencyExit ? 'emergency-exit' : ''
+                        ].filter(Boolean).join(' ');
+
+                        seatMap += `
+                            <div class="${classes}" 
+                                 data-seat="${seat.seatNumber}"
+                                 data-price="${seat.price}"
+                                 data-type="${seat.seatType}"
+                                 ${seat.status !== 'AVAILABLE' ? 'disabled' : ''}>
+                                ${seat.seatNumber}
+                            </div>
+                        `;
+                    } else {
+                        seatMap += '<div class="aisle"></div>';
+                    }
                 }
                 seatMap += '</div>';
             }
@@ -434,13 +450,17 @@
                     throw new Error('Flight ID not provided');
                 }
 
-                const response = await fetch(`/api/flights/${flightId}`);
+                const [flightResponse, seatMapResponse] = await Promise.all([
+                    fetch(`/api/flights/${flightId}`),
+                    fetch(`/api/seats/flight/${flightId}/map`)
+                ]);
 
-                if (!response.ok) {
+                if (!flightResponse.ok || !seatMapResponse.ok) {
                     throw new Error('Failed to load flight details');
                 }
 
-                const flight = await response.json();
+                const flight = await flightResponse.json();
+                const seatMapData = await seatMapResponse.json();
 
                 // Update page title
                 document.title = `Select Seats - Flight ${flight.flightNumber} - Q-Airline`;
@@ -469,20 +489,48 @@
                             <h2 class="seat-map-title">Select Your Seat</h2>
                         </div>
                         <div class="seat-map">
-                            ${createSeatMap(flight.aircraft.rows, flight.aircraft.columns, flight.occupiedSeats)}
+                            ${createSeatMap(seatMapData)}
                         </div>
                         <div class="seat-legend">
                             <div class="legend-item">
-                                <div class="legend-color" style="background: #e9ecef;"></div>
+                                <div class="seat available economy"></div>
                                 Available
                             </div>
                             <div class="legend-item">
-                                <div class="legend-color" style="background: var(--qa-primary);"></div>
+                                <div class="seat selected economy"></div>
                                 Selected
                             </div>
                             <div class="legend-item">
-                                <div class="legend-color" style="background: #dc3545;"></div>
+                                <div class="seat occupied economy"></div>
                                 Occupied
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat maintenance economy"></div>
+                                Maintenance
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat blocked economy"></div>
+                                Blocked
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat available business"></div>
+                                Business
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat available first"></div>
+                                First
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat available premium-economy"></div>
+                                Premium Economy
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat available extra-legroom"></div>
+                                Extra Legroom
+                            </div>
+                            <div class="legend-item">
+                                <div class="seat available emergency-exit"></div>
+                                Emergency Exit
                             </div>
                         </div>
                     </div>
@@ -492,19 +540,19 @@
                         <form id="passengerForm" class="passenger-form">
                             <div class="form-group">
                                 <label for="firstName">First Name</label>
-                                <input type="text" id="firstName" class="form-control" required>
+                                <input type="text" id="firstName" name="firstName" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="lastName">Last Name</label>
-                                <input type="text" id="lastName" class="form-control" required>
+                                <input type="text" id="lastName" name="lastName" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="email">Email</label>
-                                <input type="email" id="email" class="form-control" required>
+                                <input type="email" id="email" name="email" class="form-control" required>
                             </div>
                             <div class="form-group">
                                 <label for="phone">Phone</label>
-                                <input type="tel" id="phone" class="form-control" required>
+                                <input type="tel" id="phone" name="phone" class="form-control" required>
                             </div>
                         </form>
                     </div>
@@ -528,8 +576,12 @@
                             <span class="summary-value" id="selectedSeat">None</span>
                         </div>
                         <div class="summary-row">
+                            <span class="summary-label">Seat Type</span>
+                            <span class="summary-value" id="selectedSeatType">-</span>
+                        </div>
+                        <div class="summary-row">
                             <span class="summary-label">Price</span>
-                            <span class="summary-value total-price">$${flight.price}</span>
+                            <span class="summary-value total-price" id="selectedSeatPrice">-</span>
                         </div>
                         <button class="btn-continue" id="continueButton" disabled>Continue to Payment</button>
                     </div>
@@ -538,6 +590,8 @@
                 // Add seat selection handlers
                 const seats = document.querySelectorAll('.seat.available');
                 const selectedSeatDisplay = document.getElementById('selectedSeat');
+                const selectedSeatType = document.getElementById('selectedSeatType');
+                const selectedSeatPrice = document.getElementById('selectedSeatPrice');
                 const continueButton = document.getElementById('continueButton');
                 const passengerForm = document.getElementById('passengerForm');
 
@@ -549,6 +603,8 @@
                         seat.classList.add('selected');
                         // Update summary
                         selectedSeatDisplay.textContent = seat.dataset.seat;
+                        selectedSeatType.textContent = seat.dataset.type;
+                        selectedSeatPrice.textContent = `$${seat.dataset.price}`;
                         // Enable continue button if form is valid
                         continueButton.disabled = !passengerForm.checkValidity();
                     });
@@ -588,7 +644,7 @@
                         }
 
                         const booking = await response.json();
-                        window.location.href = `payment.html?bookingId=${booking.id}`;
+                        window.location.href = `tickets.html?id=${booking.id}`;
                     } catch (error) {
                         console.error('Error booking flight:', error);
                         alert('Failed to book flight. Please try again.');
