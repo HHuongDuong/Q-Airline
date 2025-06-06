@@ -69,11 +69,11 @@ public class FlightController {
 
     @GetMapping("/search")
     public ResponseEntity<List<Flight>> searchFlights(
-            @RequestParam String departureCity,
-            @RequestParam String arrivalCity,
+            @RequestParam String departureAirport,
+            @RequestParam String arrivalAirport,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        return ResponseEntity.ok(flightService.searchFlights(departureCity, arrivalCity, start, end));
+        return ResponseEntity.ok(flightService.searchFlights(departureAirport, arrivalAirport, start, end));
     }
 
     @PutMapping("/{id}/status")

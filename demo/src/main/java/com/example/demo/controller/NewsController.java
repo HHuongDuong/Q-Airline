@@ -1,13 +1,13 @@
 package com.example.demo.controller;
 
+import com.example.demo.dto.NewsDTO;
 import com.example.demo.entity.News;
 import com.example.demo.entity.User;
 import com.example.demo.service.NewsService;
 import com.example.demo.service.UserService;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.format.annotation.DateTimeFormat;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.access.prepost.PreAuthorize;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
@@ -15,70 +15,79 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/api/news")
+@RequiredArgsConstructor
 public class NewsController {
 
-    @Autowired
-    private NewsService newsService;
-
-    @Autowired
-    private UserService userService;
+    private final NewsService newsService;
+    private final UserService userService;
 
     @PostMapping
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<News> createNews(@RequestBody News news) {
-        User currentUser = userService.getCurrentUser();
-        return ResponseEntity.ok(newsService.createNews(news, currentUser));
+    public ResponseEntity<NewsDTO> createNews(@RequestBody NewsDTO newsDTO, 
+                                            @AuthenticationPrincipal User currentUser) {
+        NewsDTO createdNews = newsService.createNews(newsDTO, currentUser);
+        return ResponseEntity.ok(createdNews);
     }
 
     @PutMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<News> updateNews(@PathVariable Long id, @RequestBody News newsDetails) {
-        return ResponseEntity.ok(newsService.updateNews(id, newsDetails));
+    public ResponseEntity<NewsDTO> updateNews(@PathVariable Long id, 
+                                            @RequestBody NewsDTO newsDTO) {
+        NewsDTO updatedNews = newsService.updateNews(id, newsDTO);
+        return ResponseEntity.ok(updatedNews);
     }
 
-    @DeleteMapping("/{id}")
-    @PreAuthorize("hasRole('ADMIN')")
-    public ResponseEntity<?> deleteNews(@PathVariable Long id) {
-        newsService.deleteNews(id);
-        return ResponseEntity.ok().build();
+    @GetMapping
+    public ResponseEntity<List<NewsDTO>> getAllActiveNews() {
+        List<NewsDTO> news = newsService.getAllActiveNews();
+        return ResponseEntity.ok(news);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<News> getNewsById(@PathVariable Long id) {
-        return ResponseEntity.ok(newsService.getNewsById(id));
+    public ResponseEntity<NewsDTO> getNewsById(@PathVariable Long id) {
+        NewsDTO news = newsService.getNewsById(id);
+        return ResponseEntity.ok(news);
     }
 
-    @GetMapping("/active")
-    public ResponseEntity<List<News>> getActiveNews() {
-        return ResponseEntity.ok(newsService.getActiveNews());
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> deleteNews(@PathVariable Long id) {
+        newsService.deleteNews(id);
+        return ResponseEntity.noContent().build();
+    }
+
+    @GetMapping("/search")
+    public ResponseEntity<List<News>> searchNews(@RequestParam String keyword) {
+        List<News> news = newsService.searchNews(keyword);
+        return ResponseEntity.ok(news);
+    }
+
+    @GetMapping("/type/{type}")
+    public ResponseEntity<List<News>> getNewsByType(@PathVariable String type) {
+        List<News> news = newsService.getNewsByType(type);
+        return ResponseEntity.ok(news);
     }
 
     @GetMapping("/promotions")
     public ResponseEntity<List<News>> getActivePromotions() {
-        return ResponseEntity.ok(newsService.getActivePromotions());
+        List<News> promotions = newsService.getActivePromotions();
+        return ResponseEntity.ok(promotions);
     }
 
     @GetMapping("/user/{userId}")
-    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<News>> getNewsByUser(@PathVariable Long userId) {
-        return ResponseEntity.ok(newsService.getNewsByUser(userId));
+        List<News> news = newsService.getNewsByUser(userId);
+        return ResponseEntity.ok(news);
     }
 
-    @GetMapping("/search")
-    public ResponseEntity<List<News>> searchNews(
-            @RequestParam(required = false) String title,
-            @RequestParam(required = false) String content,
-            @RequestParam(required = false) LocalDateTime startDate,
-            @RequestParam(required = false) LocalDateTime endDate) {
-        
-        if (title != null) {
-            return ResponseEntity.ok(newsService.searchNewsByTitle(title));
-        } else if (content != null) {
-            return ResponseEntity.ok(newsService.searchNewsByContent(content));
-        } else if (startDate != null && endDate != null) {
-            return ResponseEntity.ok(newsService.getNewsByDateRange(startDate, endDate));
-        }
-        
-        return ResponseEntity.ok(newsService.getAllNews());
+    @GetMapping("/date-range")
+    public ResponseEntity<List<News>> getNewsByDateRange(
+            @RequestParam LocalDateTime start,
+            @RequestParam LocalDateTime end) {
+        List<News> news = newsService.getNewsByDateRange(start, end);
+        return ResponseEntity.ok(news);
+    }
+
+    @GetMapping("/recent")
+    public ResponseEntity<List<News>> getRecentNews(@RequestParam LocalDateTime date) {
+        List<News> news = newsService.getRecentNews(date);
+        return ResponseEntity.ok(news);
     }
 } 

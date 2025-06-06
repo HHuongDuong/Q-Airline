@@ -38,13 +38,13 @@ public class DashboardService {
         stats.setTotalBookings(ticketRepository.countByCreatedAtBetween(startOfDay, endOfDay));
 
         // Calculate total cancellations
-        stats.setTotalCancellations(cancellationRepository.countByCancelledAtBetween(startOfDay, endOfDay));
+        stats.setTotalCancellations(cancellationRepository.countByRequestedAtBetween(startOfDay, endOfDay));
 
         // Calculate total revenue
         stats.setTotalRevenue(ticketRepository.sumPriceByCreatedAtBetween(startOfDay, endOfDay));
 
         // Calculate total refunds
-        stats.setTotalRefunds(cancellationRepository.sumRefundAmountByCancelledAtBetween(startOfDay, endOfDay));
+        stats.setTotalRefunds(cancellationRepository.sumRefundAmountByRequestedAtBetween(startOfDay, endOfDay));
 
         // Calculate flight statistics
         stats.setActiveFlights(flightRepository.countByStatusAndDepartureTimeBetween("ACTIVE", startOfDay, endOfDay));
@@ -106,11 +106,11 @@ public class DashboardService {
     }
 
     public Long getTotalCancellationsByDateRange(LocalDateTime start, LocalDateTime end) {
-        return cancellationRepository.countByCancelledAtBetween(start, end);
+        return cancellationRepository.countByRequestedAtBetween(start, end);
     }
 
     public Long getTotalCancellations() {
-        return cancellationRepository.countByCancelledAtBetween(
+        return cancellationRepository.countByRequestedAtBetween(
             LocalDateTime.now().minusDays(30),
             LocalDateTime.now()
         );

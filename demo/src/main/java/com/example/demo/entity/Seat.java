@@ -3,7 +3,8 @@ package com.example.demo.entity;
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
@@ -13,10 +14,11 @@ import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "seats")
-@Data
+@Getter
+@Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class Seat {
+public class Seat extends BaseEntity {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;

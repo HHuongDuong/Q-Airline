@@ -3,10 +3,20 @@ package com.example.demo.service;
 import com.example.demo.dto.SeatMapDTO;
 import com.example.demo.dto.SeatSearchCriteria;
 import com.example.demo.entity.Seat;
+import com.example.demo.entity.Flight;
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
+import com.example.demo.exception.BadRequestException;
+import com.example.demo.exception.ResourceNotFoundException;
+import com.example.demo.repository.SeatRepository;
+import com.example.demo.repository.FlightRepository;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
+import java.util.stream.Collectors;
 
 public interface SeatService {
     List<Seat> getAllSeats();
@@ -42,4 +52,4 @@ public interface SeatService {
     Seat releaseSeat(Long seatId);
     Seat putSeatInMaintenance(Long seatId);
 }
- 
+

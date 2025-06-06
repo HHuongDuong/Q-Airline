@@ -14,11 +14,11 @@ public interface FlightRepository extends JpaRepository<Flight, Long> {
     Optional<Flight> findByFlightNumber(String flightNumber);
     List<Flight> findByAircraft(Aircraft aircraft);
     List<Flight> findByStatus(FlightStatus status);
-    List<Flight> findByDepartureCityAndArrivalCity(String departureCity, String arrivalCity);
+    List<Flight> findByDepartureAirportAndArrivalAirport(String departureAirport, String arrivalAirport);
     List<Flight> findByDepartureTimeBetween(LocalDateTime start, LocalDateTime end);
-    List<Flight> findByDepartureCityAndArrivalCityAndDepartureTimeBetween(
-        String departureCity, 
-        String arrivalCity, 
+    List<Flight> findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+        String departureAirport, 
+        String arrivalAirport, 
         LocalDateTime start, 
         LocalDateTime end
     );

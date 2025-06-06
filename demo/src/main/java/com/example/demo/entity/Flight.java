@@ -2,22 +2,24 @@ package com.example.demo.entity;
 
 import com.example.demo.enums.FlightStatus;
 import jakarta.persistence.*;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "flights")
-public class Flight {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Flight extends BaseEntity {
     @Column(name = "flight_number", unique = true, nullable = false)
     private String flightNumber;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = "aircraft_id", nullable = false)
+    private Aircraft aircraft;
 
     @Column(name = "departure_airport", nullable = false)
     private String departureAirport;

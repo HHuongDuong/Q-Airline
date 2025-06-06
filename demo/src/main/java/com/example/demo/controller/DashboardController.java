@@ -2,7 +2,7 @@ package com.example.demo.controller;
 
 import com.example.demo.entity.DashboardStats;
 import com.example.demo.service.DashboardService;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.access.prepost.PreAuthorize;
@@ -14,10 +14,10 @@ import java.util.List;
 @RestController
 @RequestMapping("/api/dashboard")
 @PreAuthorize("hasRole('ADMIN')")
+@RequiredArgsConstructor
 public class DashboardController {
 
-    @Autowired
-    private DashboardService dashboardService;
+    private final DashboardService dashboardService;
 
     @GetMapping("/stats/latest")
     public ResponseEntity<DashboardStats> getLatestStats() {

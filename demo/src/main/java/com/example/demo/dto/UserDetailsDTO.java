@@ -1,10 +1,18 @@
 package com.example.demo.dto;
 
-import lombok.Data;
+import com.example.demo.enums.UserRole;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class UserDetailsDTO {
-    private String fullName;
+    private Long id;
+    private String username;
     private String email;
+    private String fullName;
+    private UserRole role;
     private String phoneNumber;
+    private String address;
+    private Boolean isActive;
 } 

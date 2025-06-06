@@ -1,65 +1,89 @@
 package com.example.demo.service.impl;
 
+import com.example.demo.dto.NewsDTO;
 import com.example.demo.entity.News;
 import com.example.demo.entity.User;
 import com.example.demo.repository.NewsRepository;
 import com.example.demo.service.NewsService;
 import com.example.demo.service.UserService;
-import jakarta.persistence.EntityNotFoundException;
+import com.example.demo.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
 public class NewsServiceImpl implements NewsService {
+    private static final String NEWS_NOT_FOUND = "News not found";
     private final NewsRepository newsRepository;
     private final UserService userService;
 
     @Override
     @Transactional
-    public News createNews(News news, User user) {
-        news.setAuthor(user);
-        news.setCreatedAt(LocalDateTime.now());
+    public NewsDTO createNews(NewsDTO newsDTO, User author) {
+        News news = new News();
+        news.setTitle(newsDTO.getTitle());
+        news.setContent(newsDTO.getContent());
+        news.setType(newsDTO.getType());
+        news.setPublishDate(LocalDateTime.now());
+        news.setExpiryDate(newsDTO.getExpiryDate());
         news.setActive(true);
-        return newsRepository.save(news);
+        news.setCreatedBy(author);
+        
+        News savedNews = newsRepository.save(news);
+        return convertToDTO(savedNews);
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public List<NewsDTO> getAllActiveNews() {
+        return newsRepository.findByActiveTrueOrderByPublishDateDesc()
+                .stream()
+                .map(this::convertToDTO)
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public NewsDTO getNewsById(Long id) {
+        News news = newsRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(NEWS_NOT_FOUND));
+        return convertToDTO(news);
     }
 
     @Override
     @Transactional
-    public News updateNews(Long id, News newsDetails) {
+    public NewsDTO updateNews(Long id, NewsDTO newsDTO) {
         News news = newsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("News not found"));
+                .orElseThrow(() -> new ResourceNotFoundException(NEWS_NOT_FOUND));
         
-        news.setTitle(newsDetails.getTitle());
-        news.setContent(newsDetails.getContent());
-        news.setType(newsDetails.getType());
-        news.setActive(newsDetails.isActive());
-        news.setUpdatedAt(LocalDateTime.now());
+        news.setTitle(newsDTO.getTitle());
+        news.setContent(newsDTO.getContent());
+        news.setType(newsDTO.getType());
+        news.setExpiryDate(newsDTO.getExpiryDate());
+        news.setActive(newsDTO.isActive());
         
-        return newsRepository.save(news);
+        News updatedNews = newsRepository.save(news);
+        return convertToDTO(updatedNews);
     }
 
     @Override
     @Transactional
     public void deleteNews(Long id) {
-        News news = newsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("News not found"));
-        newsRepository.delete(news);
+        if (!newsRepository.existsById(id)) {
+            throw new ResourceNotFoundException(NEWS_NOT_FOUND);
+        }
+        newsRepository.deleteById(id);
     }
 
     @Override
-    public News getNewsById(Long id) {
-        return newsRepository.findById(id)
-                .orElseThrow(() -> new RuntimeException("News not found"));
-    }
-
-    @Override
+    @Transactional(readOnly = true)
     public List<News> getAllNews() {
-        return newsRepository.findAll();
+        return newsRepository.findAll().stream().toList();
     }
 
     @Override
@@ -104,6 +128,22 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     public List<News> getNewsByUser(Long userId) {
-        return newsRepository.findByAuthorId(userId);
+        return newsRepository.findByCreatedBy_Id(userId);
+    }
+
+    private NewsDTO convertToDTO(News news) {
+        NewsDTO dto = new NewsDTO();
+        dto.setId(news.getId());
+        dto.setTitle(news.getTitle());
+        dto.setContent(news.getContent());
+        dto.setType(news.getType());
+        dto.setPublishDate(news.getPublishDate());
+        dto.setExpiryDate(news.getExpiryDate());
+        dto.setActive(news.isActive());
+        if (news.getCreatedBy() != null) {
+            dto.setAuthorId(news.getCreatedBy().getId());
+            dto.setAuthorName(news.getCreatedBy().getFullName());
+        }
+        return dto;
     }
 } 

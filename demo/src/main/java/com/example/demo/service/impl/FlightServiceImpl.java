@@ -68,9 +68,9 @@ public class FlightServiceImpl implements FlightService {
 
     @Override
     @Transactional(readOnly = true)
-    public List<Flight> searchFlights(String departureCity, String arrivalCity, LocalDateTime start, LocalDateTime end) {
-        return flightRepository.findByDepartureCityAndArrivalCityAndDepartureTimeBetween(
-            departureCity, arrivalCity, start, end);
+    public List<Flight> searchFlights(String departureAirport, String arrivalAirport, LocalDateTime start, LocalDateTime end) {
+        return flightRepository.findByDepartureAirportAndArrivalAirportAndDepartureTimeBetween(
+            departureAirport, arrivalAirport, start, end);
     }
 
     @Override

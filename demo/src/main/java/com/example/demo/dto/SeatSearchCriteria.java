@@ -3,16 +3,15 @@ package com.example.demo.dto;
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
 import com.example.demo.exception.BadRequestException;
-import jakarta.validation.constraints.Min;
-import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
 import java.math.BigDecimal;
 
-@Data
+@Getter
+@Setter
 public class SeatSearchCriteria {
 
-    @NotNull(message = "Flight ID is required")
     private Long flightId;
 
     private Double minPrice;

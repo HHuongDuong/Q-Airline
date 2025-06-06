@@ -2,20 +2,14 @@ package com.example.demo.entity;
 
 import com.example.demo.enums.TicketStatus;
 import jakarta.persistence.*;
-import lombok.Data;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
+import lombok.Getter;
+import lombok.Setter;
 
-import java.time.LocalDateTime;
-
-@Data
+@Getter
+@Setter
 @Entity
 @Table(name = "tickets")
-public class Ticket {
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
-
+public class Ticket extends BaseEntity {
     @Column(name = "ticket_number", unique = true, nullable = false)
     private String ticketNumber;
 
@@ -37,12 +31,4 @@ public class Ticket {
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private TicketStatus status = TicketStatus.CONFIRMED;
-
-    @CreationTimestamp
-    @Column(name = "created_at", updatable = false)
-    private LocalDateTime createdAt;
-
-    @UpdateTimestamp
-    @Column(name = "updated_at")
-    private LocalDateTime updatedAt;
 } 

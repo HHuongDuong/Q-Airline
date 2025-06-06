@@ -4,6 +4,7 @@ import com.example.demo.entity.TicketCancellation;
 import com.example.demo.enums.CancellationStatus;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Repository;
 
 import java.time.LocalDateTime;
@@ -18,15 +19,14 @@ public interface TicketCancellationRepository extends JpaRepository<TicketCancel
     List<TicketCancellation> findByRequestedAtBetween(LocalDateTime start, LocalDateTime end);
     boolean existsByTicket_Id(Long ticketId);
     
-    List<TicketCancellation> findByCancelledAtBetween(LocalDateTime start, LocalDateTime end);
-    
-    List<TicketCancellation> findByStatusAndCancelledAtBetween(String status, LocalDateTime start, LocalDateTime end);
+    List<TicketCancellation> findByStatusAndRequestedAtBetween(String status, LocalDateTime start, LocalDateTime end);
     
     // Dashboard statistics methods
-    Long countByCancelledAtBetween(LocalDateTime start, LocalDateTime end);
+    @Query("SELECT COUNT(t) FROM TicketCancellation t WHERE t.requestedAt >= :start AND t.requestedAt < :end")
+    Long countByRequestedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
     
-    @Query("SELECT COALESCE(SUM(t.refundAmount), 0.0) FROM TicketCancellation t WHERE t.cancelledAt BETWEEN ?1 AND ?2")
-    Double sumRefundAmountByCancelledAtBetween(LocalDateTime start, LocalDateTime end);
+    @Query("SELECT COALESCE(SUM(t.refundAmount), 0.0) FROM TicketCancellation t WHERE t.requestedAt >= :start AND t.requestedAt < :end")
+    Double sumRefundAmountByRequestedAtBetween(@Param("start") LocalDateTime start, @Param("end") LocalDateTime end);
 
     List<TicketCancellation> findByTicketId(Long ticketId);
     List<TicketCancellation> findByUserId(Long userId);

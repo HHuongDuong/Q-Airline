@@ -2,27 +2,29 @@ package com.example.demo.dto;
 
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import java.util.List;
 
-@Data
+@Getter
+@Setter
 public class SeatMapDTO {
-    private Long flightId;
-    private String aircraftType;
-    private int totalRows;
-    private int seatsPerRow;
-    private List<SeatDTO> seats;
     private Long id;
+    private Long flightId;
     private String seatNumber;
     private SeatType seatType;
     private SeatStatus status;
     private Double price;
-    private Boolean hasExtraLegroom;
-    private Boolean isEmergencyExit;
+    private boolean hasExtraLegroom;
+    private boolean isEmergencyExit;
+    private int row;
+    private int column;
+    private boolean selected;
+    private String aircraftType;
+    private int totalRows;
+    private int seatsPerRow;
+    private List<SeatDTO> seats;
     private Boolean isBulkhead;
-    private Integer row;
-    private Integer column;
-    private Boolean selected;
     private String notes;
 
     public boolean isAvailable() {
@@ -55,5 +57,13 @@ public class SeatMapDTO {
 
     public boolean isSpecialSeat() {
         return hasExtraLegroom || isEmergencyExit;
+    }
+
+    public void setIsEmergencyExit(boolean isEmergencyExit) {
+        this.isEmergencyExit = isEmergencyExit;
+    }
+
+    public boolean getIsEmergencyExit() {
+        return isEmergencyExit;
     }
 } 
