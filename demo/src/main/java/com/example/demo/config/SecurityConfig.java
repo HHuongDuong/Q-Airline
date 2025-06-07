@@ -59,9 +59,10 @@ public class SecurityConfig {
                     "/favicon.ico",
                     "/"
                 ).permitAll()
+                .requestMatchers("api/auth/test-bcrypt").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**", "/admin/dashboard.html", "/admin/dashboard.html").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session

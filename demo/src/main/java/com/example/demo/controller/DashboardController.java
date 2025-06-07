@@ -10,16 +10,17 @@ import org.springframework.web.bind.annotation.*;
 
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Map;
 
 @RestController
-@RequestMapping("/api/dashboard")
+@RequestMapping("/api/admin")
 @PreAuthorize("hasRole('ADMIN')")
 @RequiredArgsConstructor
 public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping("/stats/latest")
+    @GetMapping("/stats")
     public ResponseEntity<DashboardStats> getLatestStats() {
         return ResponseEntity.ok(dashboardService.getLatestStats());
     }
@@ -37,7 +38,7 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getStatsFromDate(date));
     }
 
-    @GetMapping("/revenue")
+    @GetMapping("/revenue-stats")
     public ResponseEntity<Double> getTotalRevenue(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
@@ -67,8 +68,8 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getTotalCancellations());
     }
 
-    @GetMapping("/flights")
-    public ResponseEntity<Object> getFlightStats(
+    @GetMapping("/flight-stats")
+    public ResponseEntity<Map<String, Long>> getFlightStats(
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
             @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
         if (start != null && end != null) {

@@ -238,10 +238,6 @@
                             <i class="fas fa-circle"></i>
                             Contains number
                         </li>
-                        <li id="special" class="requirement-unmet">
-                            <i class="fas fa-circle"></i>
-                            Contains special character
-                        </li>
                     </ul>
                 </div>
             </div>
@@ -304,7 +300,6 @@
         const uppercaseRequirement = document.getElementById('uppercase');
         const lowercaseRequirement = document.getElementById('lowercase');
         const numberRequirement = document.getElementById('number');
-        const specialRequirement = document.getElementById('special');
 
         function showError(input, message) {
             input.classList.add('is-invalid');
@@ -332,15 +327,13 @@
             const hasUppercase = /[A-Z]/.test(password);
             const hasLowercase = /[a-z]/.test(password);
             const hasNumber = /[0-9]/.test(password);
-            const hasSpecial = /[!@#$%^&*(),.?":{}|<>]/.test(password);
 
             lengthRequirement.className = hasLength ? 'requirement-met' : 'requirement-unmet';
             uppercaseRequirement.className = hasUppercase ? 'requirement-met' : 'requirement-unmet';
             lowercaseRequirement.className = hasLowercase ? 'requirement-met' : 'requirement-unmet';
             numberRequirement.className = hasNumber ? 'requirement-met' : 'requirement-unmet';
-            specialRequirement.className = hasSpecial ? 'requirement-met' : 'requirement-unmet';
 
-            return hasLength && hasUppercase && hasLowercase && hasNumber && hasSpecial;
+            return hasLength && hasUppercase && hasLowercase && hasNumber;
         }
 
         async function handleRegister(event) {
@@ -395,7 +388,7 @@
                         fullName: fullNameInput.value.trim(),
                         email: emailInput.value.trim(),
                         username: usernameInput.value.trim(),
-                        password: passwordInput.value
+                        password: passwordInput.value.trim(),
                     })
                 });
 

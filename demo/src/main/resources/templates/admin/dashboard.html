@@ -463,15 +463,39 @@
             loadingSpinner.style.display = 'block';
             errorMessage.style.display = 'none';
 
+            const jwtToken = localStorage.getItem('jwtToken');
+            if (!jwtToken) {
+                console.error('JWT token not found in localStorage. Redirecting to login.');
+                showToast('Session expired or not logged in. Please log in again.', 'error');
+                setTimeout(() => {
+                    window.location.href = '/login.html';
+                }, 1000);
+                loadingSpinner.style.display = 'none';
+                return;
+            }
+
+            const headers = {
+                'Authorization': `Bearer ${jwtToken}`,
+                'Content-Type': 'application/json' // Assuming your APIs expect JSON
+            };
+
             try {
                 const [statsResponse, flightStatsResponse, revenueStatsResponse] = await Promise.all([
-                    fetch('/api/admin/stats'),
-                    fetch('/api/admin/flight-stats'),
-                    fetch('/api/admin/revenue-stats')
+                    fetch('/api/admin/stats', { headers: headers }),
+                    fetch('/api/admin/flight-stats', { headers: headers }),
+                    fetch('/api/admin/revenue-stats', { headers: headers })
                 ]);
 
                 if (!statsResponse.ok || !flightStatsResponse.ok || !revenueStatsResponse.ok) {
-                    throw new Error('Failed to load dashboard data');
+                    // If any response is 403, it means the token might be invalid or expired
+                    if (statsResponse.status === 403 || flightStatsResponse.status === 403 || revenueStatsResponse.status === 403) {
+                        showToast('Access denied. Your session might have expired. Please log in again.', 'error');
+                        setTimeout(() => {
+                            window.location.href = '/login.html';
+                        }, 1000);
+                    } else {
+                        throw new Error('Failed to load dashboard data');
+                    }
                 }
 
                 const stats = await statsResponse.json();
@@ -513,3 +537,4 @@
     </script>
 </body>
 </html> 
+
