@@ -226,6 +226,8 @@
             background: white;
             width: 90%;
             max-width: 600px;
+            max-height: 80vh;
+            overflow-y: auto;
             margin: 2rem auto;
             padding: 2rem;
             border-radius: var(--qa-radius-lg);
@@ -569,6 +571,24 @@
                     <div class="invalid-feedback">Please select arrival time</div>
                 </div>
                 <div class="form-group">
+                    <label class="form-label" for="aircraftId">Aircraft</label>
+                    <select class="form-select" id="aircraftId" required>
+                        <!-- Aircraft options will be loaded here -->
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="totalSeats">Total Seats</label>
+                    <input type="number" class="form-control" id="totalSeats" required>
+                </div>
+                <div class="form-group">
+                    <label for="availableSeats">Available Seats</label>
+                    <input type="number" class="form-control" id="availableSeats" required>
+                </div>
+                <div class="form-group">
+                    <label for="price">Price</label>
+                    <input type="number" class="form-control" id="price" step="0.01" required>
+                </div>
+                <div class="form-group">
                     <label for="status">Status</label>
                     <select class="form-control" id="status" required>
                         <option value="scheduled">Scheduled</option>
@@ -725,6 +745,7 @@
             document.getElementById('modalTitle').textContent = 'Add Flight';
             document.getElementById('flightForm').reset();
             document.getElementById('flightId').value = '';
+            loadAircrafts(); // Load aircrafts when opening the add modal
             document.getElementById('flightModal').style.display = 'block';
         }
 
@@ -748,12 +769,50 @@
                 document.getElementById('arrivalCity').value = flight.arrivalCity;
                 document.getElementById('departureTime').value = formatDateTimeForInput(flight.departureTime);
                 document.getElementById('arrivalTime').value = formatDateTimeForInput(flight.arrivalTime);
+                
+                // Load aircrafts and then select the correct one
+                await loadAircrafts(flight.aircraft.id); 
+
+                document.getElementById('totalSeats').value = flight.totalSeats;
+                document.getElementById('availableSeats').value = flight.availableSeats;
+                document.getElementById('price').value = flight.price;
                 document.getElementById('status').value = flight.status;
 
                 document.getElementById('flightModal').style.display = 'block';
             } catch (error) {
                 console.error('Error loading flight details:', error);
                 showToast('Failed to load flight details', 'error');
+            }
+        }
+
+        // Load aircrafts into the dropdown
+        async function loadAircrafts(selectedAircraftId = null) {
+            try {
+                const response = await fetch('/api/admin/aircraft', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to load aircrafts');
+                }
+                const aircrafts = await response.json();
+                const aircraftSelect = document.getElementById('aircraftId');
+                aircraftSelect.innerHTML = ''; // Clear existing options
+
+                aircrafts.forEach(aircraft => {
+                    const option = document.createElement('option');
+                    option.value = aircraft.id;
+                    option.textContent = `${aircraft.code} (${aircraft.model})`;
+                    aircraftSelect.appendChild(option);
+                });
+
+                if (selectedAircraftId) {
+                    aircraftSelect.value = selectedAircraftId;
+                }
+            } catch (error) {
+                console.error('Error loading aircrafts:', error);
+                showToast('Failed to load aircrafts', 'error');
             }
         }
 
@@ -782,6 +841,10 @@
                 arrivalCity: document.getElementById('arrivalCity').value,
                 departureTime: document.getElementById('departureTime').value,
                 arrivalTime: document.getElementById('arrivalTime').value,
+                aircraftId: document.getElementById('aircraftId').value,
+                totalSeats: parseInt(document.getElementById('totalSeats').value),
+                availableSeats: parseInt(document.getElementById('availableSeats').value),
+                price: parseFloat(document.getElementById('price').value),
                 status: document.getElementById('status').value
             };
 
@@ -864,6 +927,11 @@
 
         // Initial load
         loadFlights();
+
+        // Add this to ensure aircrafts are loaded when the page loads, in case you open the modal right away.
+        // This is primarily for initial setup, subsequent calls in openAddFlightModal/editFlight will handle it.
+        loadAircrafts();
     </script>
 </body>
 </html> 
+

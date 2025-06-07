@@ -1,0 +1,541 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Management - Q-Airline Admin</title>
+    <link rel="stylesheet" href="../css/brand.css">
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--qa-primary);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: var(--qa-radius-sm);
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link svg {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            color: var(--qa-primary);
+            margin: 0;
+        }
+
+        .tickets-table {
+            width: 100%;
+            background: white;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .tickets-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .tickets-table th,
+        .tickets-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tickets-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--qa-primary);
+        }
+
+        .tickets-table tr:hover {
+            background: #f8f9fa;
+        }
+
+        .ticket-status {
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--qa-radius-sm);
+            font-size: 0.875rem;
+            font-weight: 500;
+        }
+
+        .status-confirmed {
+            background: #d4edda;
+            color: #155724;
+        }
+
+        .status-cancelled {
+            background: #f8d7da;
+            color: #721c24;
+        }
+
+        .status-pending {
+            background: #fff3cd;
+            color: #856404;
+        }
+
+        .ticket-actions {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-view,
+        .btn-cancel {
+            padding: 0.5rem 1rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-view {
+            background: var(--qa-secondary);
+            color: white;
+        }
+
+        .btn-view:hover {
+            background: var(--qa-secondary-dark);
+        }
+
+        .btn-cancel {
+            background: #dc3545;
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: #c82333;
+        }
+
+        /* Modal styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            background: white;
+            width: 90%;
+            max-width: 600px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: var(--qa-radius-lg);
+            position: relative;
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--qa-primary);
+            margin: 0;
+        }
+
+        .btn-close {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--qa-gray);
+        }
+
+        .ticket-details {
+            margin-bottom: 1.5rem;
+        }
+
+        .detail-group {
+            margin-bottom: 1rem;
+        }
+
+        .detail-label {
+            font-weight: 600;
+            color: var(--qa-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .detail-value {
+            color: var(--qa-text);
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-close-modal {
+            background: var(--qa-gray);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .tickets-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Q-Airline Admin</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/admin/dashboard.html" class="nav-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M3.75 3v11.25A2.25 2.25 0 0 0 6 16.5h2.25M3.75 3h-.375a1.125 1.125 0 0 0-1.125 1.125v11.25c0 .621.504 1.125 1.125 1.125h9.75M4.5 18.75h9.75M12 18.75V21m-4.75-2.25H3.75m11.25-10.5H12M12 10.5h1.125c.621 0 1.125.504 1.125 1.125v.375m-1.125-1.5h2.25m-.75 0H12m4.5 0h1.125c.621 0 1.125.504 1.125 1.125v.375m-1.125-1.5h2.25m-2.25 0h1.125m-1.125 0H12" />
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-flights.html" class="nav-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M6 12L3.269 3.126A59.768 59.768 0 0121.485 12 59.77 59.77 0 013.27 20.876L5.999 12zm0 0h7.5" />
+                        </svg>
+                        Flights
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/delays.html" class="nav-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z" />
+                        </svg>
+                        Delays
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-tickets.html" class="nav-link active">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M16.5 6v.75m0 3v.75m0 3v.75m0 3V18m-9-5.25h5.25M7.5 15h3M3.375 5.25c-.621 0-1.125.504-1.125 1.125v3.026a2.999 2.999 0 010 5.198v3.026c0 .621.504 1.125 1.125 1.125h17.25c.621 0 1.125-.504 1.125-1.125v-3.026a2.999 2.999 0 010-5.198V6.375c0-.621-.504-1.125-1.125-1.125H3.375z" />
+                        </svg>
+                        Tickets
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-users.html" class="nav-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15 19.128a9.38 9.38 0 002.625.372 9.337 9.337 0 004.121-.952 4.125 4.125 0 00-7.533-2.493M15 19.128v-.003c0-1.113-.285-2.16-.786-3.07M15 19.128v.106A12.318 12.318 0 018.624 21c-2.331 0-4.512-.645-6.374-1.766l-.001-.109a6.375 6.375 0 0111.964-3.07M12 6.375a3.375 3.375 0 11-6.75 0 3.375 3.375 0 016.75 0zm8.25 2.25a2.625 2.625 0 11-5.25 0 2.625 2.625 0 015.25 0z" />
+                        </svg>
+                        Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-news.html" class="nav-link">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M12 7.5h1.5m-1.5 3h1.5m-7.5 3h7.5m-7.5 3h7.5m3-9h3.375c.621 0 1.125.504 1.125 1.125V18a2.25 2.25 0 01-2.25 2.25M16.5 7.5V18a2.25 2.25 0 002.25 2.25M16.5 7.5V4.875c0-.621-.504-1.125-1.125-1.125H4.125C3.504 3.75 3 4.254 3 4.875V18a2.25 2.25 0 002.25 2.25h13.5M6 7.5h3v3H6v-3z" />
+                        </svg>
+                        News
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="logoutLink">
+                        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15M12 9l-3 3m0 0l3 3m-3-3h12.75" />
+                        </svg>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Ticket Management</h1>
+            </div>
+
+            <div class="tickets-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>Ticket ID</th>
+                            <th>Flight</th>
+                            <th>Passenger</th>
+                            <th>Seat</th>
+                            <th>Status</th>
+                            <th>Booked At</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="ticketsTableBody">
+                        <!-- Ticket rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- View Ticket Modal -->
+    <div class="modal" id="ticketModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title">Ticket Details</h2>
+                <button class="btn-close" id="closeModal">&times;</button>
+            </div>
+            <div class="ticket-details" id="ticketDetails">
+                <!-- Ticket details will be dynamically added here -->
+            </div>
+            <div class="modal-footer">
+                <button class="btn-close-modal" id="closeModalBtn">Close</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Check authentication
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        // Logout functionality
+        document.getElementById('logoutLink').addEventListener('click', function(e) {
+            e.preventDefault();
+            localStorage.removeItem('jwtToken');
+            window.location.href = '/login.html';
+        });
+
+        // Modal functionality
+        const modal = document.getElementById('ticketModal');
+        const closeModal = document.getElementById('closeModal');
+        const closeModalBtn = document.getElementById('closeModalBtn');
+
+        function openModal() {
+            modal.style.display = 'block';
+        }
+
+        function closeModalFunc() {
+            modal.style.display = 'none';
+        }
+
+        closeModal.addEventListener('click', closeModalFunc);
+        closeModalBtn.addEventListener('click', closeModalFunc);
+
+        // Close modal when clicking outside
+        window.addEventListener('click', function(e) {
+            if (e.target === modal) {
+                closeModalFunc();
+            }
+        });
+
+        // Load tickets
+        async function loadTickets() {
+            try {
+                const response = await fetch('/api/admin/tickets', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const tickets = await response.json();
+                    const ticketsTableBody = document.getElementById('ticketsTableBody');
+                    ticketsTableBody.innerHTML = '';
+
+                    tickets.forEach(ticket => {
+                        const row = document.createElement('tr');
+                        row.innerHTML = `
+                            <td>${ticket.id}</td>
+                            <td>${ticket.flight.flightNumber}</td>
+                            <td>${ticket.passengerName}</td>
+                            <td>${ticket.seatNumber}</td>
+                            <td>
+                                <span class="ticket-status status-${ticket.status.toLowerCase()}">
+                                    ${ticket.status}
+                                </span>
+                            </td>
+                            <td>${new Date(ticket.bookedAt).toLocaleDateString()}</td>
+                            <td class="ticket-actions">
+                                <button class="btn-view" onclick="viewTicket(${ticket.id})">View</button>
+                                ${ticket.status === 'CONFIRMED' ? `
+                                    <button class="btn-cancel" onclick="cancelTicket(${ticket.id})">Cancel</button>
+                                ` : ''}
+                            </td>
+                        `;
+                        ticketsTableBody.appendChild(row);
+                    });
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // View ticket details
+        async function viewTicket(id) {
+            try {
+                const response = await fetch(`/api/admin/tickets/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (response.ok) {
+                    const ticket = await response.json();
+                    const ticketDetails = document.getElementById('ticketDetails');
+                    ticketDetails.innerHTML = `
+                        <div class="detail-group">
+                            <div class="detail-label">Ticket ID</div>
+                            <div class="detail-value">${ticket.id}</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Flight</div>
+                            <div class="detail-value">${ticket.flight.flightNumber} - ${ticket.flight.departureCity} to ${ticket.flight.arrivalCity}</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Passenger</div>
+                            <div class="detail-value">${ticket.passengerName}</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Seat</div>
+                            <div class="detail-value">${ticket.seatNumber}</div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Status</div>
+                            <div class="detail-value">
+                                <span class="ticket-status status-${ticket.status.toLowerCase()}">
+                                    ${ticket.status}
+                                </span>
+                            </div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-label">Booked At</div>
+                            <div class="detail-value">${new Date(ticket.bookedAt).toLocaleString()}</div>
+                        </div>
+                        ${ticket.cancelledAt ? `
+                            <div class="detail-group">
+                                <div class="detail-label">Cancelled At</div>
+                                <div class="detail-value">${new Date(ticket.cancelledAt).toLocaleString()}</div>
+                            </div>
+                        ` : ''}
+                    `;
+                    openModal();
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+
+        // Cancel ticket
+        async function cancelTicket(id) {
+            if (confirm('Are you sure you want to cancel this ticket?')) {
+                try {
+                    const response = await fetch(`/api/admin/tickets/${id}/cancel`, {
+                        method: 'POST',
+                        headers: {
+                            'Authorization': `Bearer ${token}`
+                        }
+                    });
+
+                    if (response.ok) {
+                        loadTickets(); // Reload the tickets list
+                    } else {
+                        alert('Failed to cancel ticket');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('An error occurred while cancelling ticket');
+                }
+            }
+        }
+
+        // Load tickets when page loads
+        loadTickets();
+    </script>
+</body>
+</html> 
+

@@ -62,7 +62,7 @@ public class SecurityConfig {
                 .requestMatchers("api/auth/test-bcrypt").permitAll()
                 .requestMatchers("/api/auth/**").permitAll()
                 .requestMatchers("/api/public/**").permitAll()
-                .requestMatchers("/api/admin/**", "/admin/dashboard.html", "/admin/dashboard.html").hasRole("ADMIN")
+                .requestMatchers("/api/admin/**", "/admin/dashboard.html", "/admin/delays.html", "/admin/admin-flights.html", "/admin/admin-users.html", "/admin/admin-tickets.html", "/admin/admin-news.html").hasRole("ADMIN")
                 .anyRequest().authenticated()
             )
             .sessionManagement(session -> session
