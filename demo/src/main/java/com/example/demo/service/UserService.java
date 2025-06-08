@@ -3,6 +3,7 @@ package com.example.demo.service;
 import com.example.demo.entity.User;
 import com.example.demo.enums.UserRole;
 import com.example.demo.dto.UserDetailsDTO;
+import com.example.demo.dto.UserResponseDTO;
 import org.springframework.security.core.userdetails.UserDetailsService;
 
 import java.util.List;
@@ -16,7 +17,7 @@ public interface UserService extends UserDetailsService {
     Optional<User> findByUsername(String username);
     Optional<User> findByEmail(String email);
     List<User> getAllUsers();
-    User getCurrentUser();
+    UserResponseDTO getCurrentUser();
     boolean existsByUsername(String username);
     boolean existsByEmail(String email);
     void changePassword(Long userId, String oldPassword, String newPassword);

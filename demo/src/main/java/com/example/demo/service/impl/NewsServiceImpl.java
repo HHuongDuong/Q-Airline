@@ -38,7 +38,7 @@ public class NewsServiceImpl implements NewsService {
         news.setExpiryDate(LocalDateTime.now().plusYears(1)); // Example: expires in 1 year
         news.setActive(true);
         // Assign current logged-in user as author if applicable, otherwise handle null
-        User currentUser = userService.getCurrentUser(); 
+        User currentUser = userService.getUserById(userService.getCurrentUser().getId());
         news.setCreatedBy(currentUser);
         
         News savedNews = newsRepository.save(news);

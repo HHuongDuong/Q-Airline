@@ -8,6 +8,7 @@ import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.UserRepository;
 import com.example.demo.service.UserService;
 import com.example.demo.dto.UserDetailsDTO;
+import com.example.demo.dto.UserResponseDTO;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.security.core.userdetails.UserDetails;
@@ -91,10 +92,24 @@ public class UserServiceImpl implements UserService {
     }
 
     @Override
-    public User getCurrentUser() {
+    public UserResponseDTO getCurrentUser() {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return findByUsername(username)
+        User user = findByUsername(username)
                 .orElseThrow(() -> new ResourceNotFoundException(USER_NOT_FOUND));
+        return convertToUserResponseDTO(user);
+    }
+
+    private UserResponseDTO convertToUserResponseDTO(User user) {
+        UserResponseDTO dto = new UserResponseDTO();
+        dto.setId(user.getId());
+        dto.setUsername(user.getUsername());
+        dto.setEmail(user.getEmail());
+        dto.setRole(user.getRole());
+        dto.setFullName(user.getFullName());
+        dto.setPhoneNumber(user.getPhoneNumber());
+        dto.setCreatedAt(user.getCreatedAt());
+        dto.setUpdatedAt(user.getUpdatedAt());
+        return dto;
     }
 
     @Override
