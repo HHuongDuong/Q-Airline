@@ -212,17 +212,17 @@
     <!-- Navigation -->
     <nav class="qa-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <a class="navbar-brand" href="index.">Q-Airline</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="nav-links">
-                    <li><a class="active" href="flights.html">Flights</a></li>
-                    <li><a href="tickets.html">My Tickets</a></li>
-                    <li><a href="news.html">News</a></li>
-                    <li><a href="login.html" id="loginLink">Login</a></li>
-                    <li><a href="register.html" id="registerLink">Register</a></li>
+                    <li><a class="active" href="flights">Flights</a></li>
+                    <li><a href="tickets">My Tickets</a></li>
+                    <li><a href="news">News</a></li>
+                    <li><a href="login" id="loginLink">Login</a></li>
+                    <li><a href="register" id="registerLink">Register</a></li>
                     <li><a href="#" id="logoutLink" style="display: none;">Logout</a></li>
                 </ul>
             </div>
@@ -328,7 +328,7 @@
             e.preventDefault();
             localStorage.removeItem('token');
             checkAuth();
-            window.location.href = 'index.html';
+            window.location.href = 'index.';
         });
 
         // Show loading spinner
@@ -375,8 +375,8 @@
                 // Populate city dropdowns
                 const cities = new Set();
                 flights.forEach(flight => {
-                    cities.add(flight.departureCity);
-                    cities.add(flight.arrivalCity);
+                    cities.add(flight.departureAirport);
+                    cities.add(flight.arrivalAirport);
                 });
                 
                 const cityOptions = Array.from(cities).sort().map(city => 
@@ -415,19 +415,19 @@
                             <div class="col-md-8">
                                 <h5 class="card-title">Flight ${flight.flightNumber}</h5>
                                 <h6 class="card-subtitle mb-2 text-muted">
-                                    <i class="fas fa-plane-departure"></i> ${flight.departureCity} 
+                                    <i class="fas fa-plane-departure"></i> ${flight.departureAirport} 
                                     <i class="fas fa-arrow-right mx-2"></i>
-                                    <i class="fas fa-plane-arrival"></i> ${flight.arrivalCity}
+                                    <i class="fas fa-plane-arrival"></i> ${flight.arrivalAirport}
                                 </h6>
                                 <p class="card-text">
                                     <i class="far fa-clock"></i> <strong>Departure:</strong> ${new Date(flight.departureTime).toLocaleString()}<br>
                                     <i class="far fa-clock"></i> <strong>Arrival:</strong> ${new Date(flight.arrivalTime).toLocaleString()}<br>
-                                    <i class="fas fa-plane"></i> <strong>Aircraft:</strong> ${flight.aircraft.model}<br>
+                                    <i class="fas fa-plane"></i> <strong>Aircraft:</strong> ${flight.aircraftModel}<br>
                                     <i class="fas fa-chair"></i> <strong>Available Seats:</strong> ${flight.availableSeats}
                                 </p>
                             </div>
                             <div class="col-md-4 text-end">
-                                <a href="flight-detail.html?flightId=${flight.id}" class="btn btn-primary">
+                                <a href="flight-detail?flightId=${flight.id}" class="btn btn-primary">
                                     <i class="fas fa-info-circle"></i> View Details
                                 </a>
                             </div>
@@ -448,11 +448,11 @@
             const filteredFlights = flights.filter(flight => {
                 const matchesSearch = 
                     flight.flightNumber.toLowerCase().includes(searchTerm) ||
-                    flight.departureCity.toLowerCase().includes(searchTerm) ||
-                    flight.arrivalCity.toLowerCase().includes(searchTerm);
+                    flight.departureAirport.toLowerCase().includes(searchTerm) ||
+                    flight.arrivalAirport.toLowerCase().includes(searchTerm);
                 
-                const matchesDeparture = !departureCity || flight.departureCity === departureCity;
-                const matchesArrival = !arrivalCity || flight.arrivalCity === arrivalCity;
+                const matchesDeparture = !departureCity || flight.departureAirport === departureCity;
+                const matchesArrival = !arrivalCity || flight.arrivalAirport === arrivalCity;
                 
                 return matchesSearch && matchesDeparture && matchesArrival;
             });
@@ -474,3 +474,4 @@
     </script>
 </body>
 </html> 
+

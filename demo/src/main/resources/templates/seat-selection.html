@@ -320,18 +320,18 @@
     <!-- Navigation -->
     <nav class="qa-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <a class="navbar-brand" href="index">Q-Airline</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a class="active" href="flights.html">Flights</a></li>
-                    <li><a href="tickets.html">My Tickets</a></li>
-                    <li><a href="news.html">News</a></li>
-                    <li><a href="login.html" id="loginLink">Login</a></li>
-                    <li><a href="register.html" id="registerLink">Register</a></li>
+                    <li><a href="index">Home</a></li>
+                    <li><a class="active" href="flights">Flights</a></li>
+                    <li><a href="tickets">My Tickets</a></li>
+                    <li><a href="news">News</a></li>
+                    <li><a href="login" id="loginLink">Login</a></li>
+                    <li><a href="register" id="registerLink">Register</a></li>
                     <li><a href="#" id="logoutLink" style="display: none;">Logout</a></li>
                 </ul>
             </div>
@@ -644,7 +644,7 @@
                         }
 
                         const booking = await response.json();
-                        window.location.href = `tickets.html?id=${booking.id}`;
+                        window.location.href = `tickets.?id=${booking.id}`;
                     } catch (error) {
                         console.error('Error booking flight:', error);
                         alert('Failed to book flight. Please try again.');

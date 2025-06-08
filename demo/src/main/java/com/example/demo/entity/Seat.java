@@ -9,6 +9,7 @@ import lombok.NoArgsConstructor;
 import lombok.AllArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import java.time.LocalDateTime;
 
@@ -23,8 +24,9 @@ public class Seat extends BaseEntity {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Long id;
 
-    @ManyToOne
+    @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "flight_id", nullable = false)
+    @JsonIgnore
     private Flight flight;
 
     @Column(nullable = false)
@@ -61,6 +63,7 @@ public class Seat extends BaseEntity {
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "aircraft_id", nullable = false)
+    @JsonIgnore
     private Aircraft aircraft;
 
     @CreationTimestamp
@@ -112,6 +115,14 @@ public class Seat extends BaseEntity {
         this.status = status;
     }
 
+    public Double getPrice() {
+        return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
+    }
+
     public boolean getHasExtraLegroom() {
         return hasExtraLegroom;
     }
@@ -152,20 +163,20 @@ public class Seat extends BaseEntity {
         this.column = column;
     }
 
-    public Double getPrice() {
-        return price;
-    }
-
-    public void setPrice(Double price) {
-        this.price = price;
-    }
-
     public String getNotes() {
         return notes;
     }
 
     public void setNotes(String notes) {
         this.notes = notes;
+    }
+
+    public Aircraft getAircraft() {
+        return aircraft;
+    }
+
+    public void setAircraft(Aircraft aircraft) {
+        this.aircraft = aircraft;
     }
 
     public LocalDateTime getCreatedAt() {

@@ -7,6 +7,8 @@ import com.example.demo.repository.FlightRepository;
 import com.example.demo.service.FlightService;
 import com.example.demo.exception.ResourceNotFoundException;
 import lombok.RequiredArgsConstructor;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -52,6 +54,12 @@ public class FlightServiceImpl implements FlightService {
     @Transactional(readOnly = true)
     public List<Flight> getAllFlights() {
         return flightRepository.findAll();
+    }
+
+    @Override
+    @Transactional(readOnly = true)
+    public Page<Flight> getAllFlights(Pageable pageable) {
+        return flightRepository.findAll(pageable);
     }
 
     @Override

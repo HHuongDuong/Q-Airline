@@ -1,0 +1,712 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Manage Aircraft - Q-Airline Admin</title>
+    <link rel="stylesheet" href="../css/brand.css">
+    <style>
+        .admin-container {
+            display: flex;
+            min-height: 100vh;
+        }
+
+        .sidebar {
+            width: 250px;
+            background: var(--qa-primary);
+            color: white;
+            padding: 1rem;
+            position: fixed;
+            height: 100vh;
+            overflow-y: auto;
+        }
+
+        .sidebar-header {
+            padding: 1rem 0;
+            text-align: center;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+        }
+
+        .sidebar-header h2 {
+            margin: 0;
+            font-size: 1.5rem;
+        }
+
+        .nav-menu {
+            list-style: none;
+            padding: 0;
+            margin: 1rem 0;
+        }
+
+        .nav-item {
+            margin-bottom: 0.5rem;
+        }
+
+        .nav-link {
+            display: flex;
+            align-items: center;
+            padding: 0.75rem 1rem;
+            color: white;
+            text-decoration: none;
+            border-radius: var(--qa-radius-sm);
+            transition: background-color 0.3s;
+        }
+
+        .nav-link:hover,
+        .nav-link.active {
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .nav-link svg {
+            margin-right: 0.75rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .main-content {
+            flex: 1;
+            margin-left: 250px;
+            padding: 2rem;
+            background: #f8f9fa;
+        }
+
+        .page-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+        }
+
+        .page-title {
+            font-size: 1.75rem;
+            color: var(--qa-primary);
+            margin: 0;
+        }
+
+        .btn-add {
+            background-color: var(--qa-primary);
+            color: white;
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+            display: flex;
+            align-items: center;
+            transition: background-color 0.3s;
+        }
+
+        .btn-add:hover {
+            background-color: var(--qa-primary-dark);
+        }
+
+        .btn-add svg {
+            margin-right: 0.5rem;
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        .aircraft-table {
+            width: 100%;
+            background: white;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            overflow: hidden;
+        }
+
+        .aircraft-table table {
+            width: 100%;
+            border-collapse: collapse;
+        }
+
+        .aircraft-table th,
+        .aircraft-table td {
+            padding: 1rem;
+            text-align: left;
+            border-bottom: 1px solid #eee;
+        }
+
+        .aircraft-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: var(--qa-gray);
+        }
+
+        .aircraft-table tr:last-child td {
+            border-bottom: none;
+        }
+
+        .action-buttons {
+            display: flex;
+            gap: 0.5rem;
+        }
+
+        .btn-action {
+            padding: 0.5rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-edit {
+            background: #e6f7ff;
+            color: #1890ff;
+        }
+
+        .btn-delete {
+            background: #fff1f0;
+            color: #f5222d;
+        }
+
+        .btn-action:hover {
+            opacity: 0.8;
+        }
+
+        .btn-action svg {
+            width: 1.25rem;
+            height: 1.25rem;
+        }
+
+        /* Modal Styles */
+        .modal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+
+        .modal-content {
+            position: relative;
+            background: white;
+            width: 90%;
+            max-width: 500px;
+            margin: 2rem auto;
+            padding: 2rem;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+
+        .modal-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .modal-title {
+            font-size: 1.5rem;
+            color: var(--qa-primary);
+            margin: 0;
+        }
+
+        .close-modal {
+            background: none;
+            border: none;
+            font-size: 1.5rem;
+            cursor: pointer;
+            color: var(--qa-gray);
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-label {
+            display: block;
+            margin-bottom: 0.5rem;
+            color: var(--qa-text);
+        }
+
+        .form-input {
+            width: 100%;
+            padding: 0.75rem;
+            border: 1px solid #ddd;
+            border-radius: var(--qa-radius-sm);
+            font-size: 1rem;
+        }
+
+        .modal-footer {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+
+        .btn-cancel,
+        .btn-save {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            transition: background-color 0.3s;
+        }
+
+        .btn-cancel {
+            background: var(--qa-gray);
+            color: white;
+        }
+
+        .btn-save {
+            background: var(--qa-primary);
+            color: white;
+        }
+
+        .btn-cancel:hover {
+            background: var(--qa-gray-dark);
+        }
+
+        .btn-save:hover {
+            background: var(--qa-primary-dark);
+        }
+
+        /* Toast Notification */
+        .toast-container {
+            position: fixed;
+            top: 1rem;
+            right: 1rem;
+            z-index: 1100;
+        }
+
+        .toast {
+            background: white;
+            padding: 1rem;
+            border-radius: var(--qa-radius-sm);
+            box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+            margin-bottom: 0.5rem;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            animation: slideIn 0.3s ease-out;
+        }
+
+        .toast-success {
+            border-left: 4px solid #28a745;
+        }
+
+        .toast-error {
+            border-left: 4px solid #dc3545;
+        }
+
+        @keyframes slideIn {
+            from {
+                transform: translateX(100%);
+                opacity: 0;
+            }
+            to {
+                transform: translateX(0);
+                opacity: 1;
+            }
+        }
+
+        @keyframes spin {
+            to {
+                transform: rotate(360deg);
+            }
+        }
+
+        @media (max-width: 768px) {
+            .admin-container {
+                flex-direction: column;
+            }
+
+            .sidebar {
+                width: 100%;
+                height: auto;
+                position: relative;
+            }
+
+            .main-content {
+                margin-left: 0;
+            }
+
+            .aircraft-table {
+                display: block;
+                overflow-x: auto;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="admin-container">
+        <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Q-Airline Admin</h2>
+            </div>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/admin/dashboard" class="nav-link active">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
+                            <path d="M9 22V12h6v10"/>
+                        </svg>
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-flights" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M12 19l7-7 3 3-7 7-3-3z"/>
+                            <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
+                        </svg>
+                        Flights
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-seats" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 3H7a2 2 0 00-2 2v14a2 2 0 002 2h10a2 2 0 002-2V5a2 2 0 00-2-2z"/>
+                            <line x1="12" y1="18" x2="12" y2="18"/>
+                            <line x1="12" y1="12" x2="12" y2="12"/>
+                            <path d="M9 11h6V7H9v4z"/>
+                        </svg>
+                        Seats
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-tickets" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
+                            <line x1="16" y1="2" x2="16" y2="6"/>
+                            <line x1="8" y1="2" x2="8" y2="6"/>
+                            <line x1="3" y1="10" x2="21" y2="10"/>
+                        </svg>
+                        Tickets
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-users" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
+                            <circle cx="9" cy="7" r="4"/>
+                            <path d="M23 21v-2a4 4 0 00-3-3.87"/>
+                            <path d="M16 3.13a4 4 0 010 7.75"/>
+                        </svg>
+                        Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-news" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+<path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
+                        </svg>
+                        News
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/delays" class="nav-link">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <circle cx="12" cy="12" r="10"></circle>
+                            <polyline points="12 6 12 12 16 14"></polyline>
+                        </svg>
+                        Delays
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a href="/admin/admin-aircraft" class="nav-link">
+                        
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M14 6L14.5 15.5L14 19L2 22L7 11L14 6Z"></path>
+                            <path d="M22 6L14 14L14.5 15.5L14 19L2 22L7 11L14 6L22 6Z"></path>
+                            <path d="M10 14L2 22"></path>
+                        </svg>
+                        Aircraft
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="logoutLink">
+                        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                            <path d="M9 21H5a2 2 0 01-2-2V5a2 2 0 012-2h4"/>
+                            <polyline points="16 17 21 12 16 7"/>
+                            <line x1="21" y1="12" x2="9" y2="12"/>
+                        </svg>
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="page-header">
+                <h1 class="page-title">Aircraft Management</h1>
+                <button class="btn-add" id="addAircraftBtn">
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" style="width: 1.25rem; height: 1.25rem;">
+                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15" />
+                    </svg>
+                    Add Aircraft
+                </button>
+            </div>
+
+            <div class="aircraft-table">
+                <table>
+                    <thead>
+                        <tr>
+                            <th>ID</th>
+                            <th>Code</th>
+                            <th>Manufacturer</th>
+                            <th>Model</th>
+                            <th>Total Seats</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody id="aircraftTableBody">
+                        <!-- Aircraft rows will be dynamically added here -->
+                    </tbody>
+                </table>
+            </div>
+        </main>
+    </div>
+
+    <!-- Add/Edit Aircraft Modal -->
+    <div class="modal" id="aircraftModal">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h2 class="modal-title" id="modalTitle">Add Aircraft</h2>
+                <button class="close-modal" id="closeModal">&times;</button>
+            </div>
+            <form id="aircraftForm">
+                <input type="hidden" id="aircraftId">
+                <div class="form-group">
+                    <label class="form-label" for="code">Code</label>
+                    <input type="text" class="form-input" id="code" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="manufacturer">Manufacturer</label>
+                    <input type="text" class="form-input" id="manufacturer" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="model">Model</label>
+                    <input type="text" class="form-input" id="model" required>
+                </div>
+                <div class="form-group">
+                    <label class="form-label" for="totalSeats">Total Seats</label>
+                    <input type="number" class="form-input" id="totalSeats" required min="1">
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn-cancel" id="cancelBtn">Cancel</button>
+                    <button type="submit" class="btn-save">Save</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div id="toastContainer" class="toast-container"></div>
+
+    <script>
+        // Authentication check
+        const token = localStorage.getItem('jwtToken');
+        if (!token) {
+            window.location.href = '/login.html';
+        }
+
+        const aircraftModal = document.getElementById('aircraftModal');
+        const addAircraftBtn = document.getElementById('addAircraftBtn');
+        const closeModalBtn = document.getElementById('closeModal');
+        const cancelBtn = document.getElementById('cancelBtn');
+        const aircraftForm = document.getElementById('aircraftForm');
+        const aircraftTableBody = document.getElementById('aircraftTableBody');
+        const modalTitle = document.getElementById('modalTitle');
+        const logoutLink = document.getElementById('logoutLink');
+
+        // Open Add Aircraft Modal
+        addAircraftBtn.addEventListener('click', () => {
+            modalTitle.textContent = 'Add Aircraft';
+            aircraftForm.reset();
+            document.getElementById('aircraftId').value = ''; // Clear hidden ID
+            aircraftModal.style.display = 'block';
+        });
+
+        // Close Modal
+        closeModalBtn.addEventListener('click', closeModal);
+        cancelBtn.addEventListener('click', closeModal);
+        window.addEventListener('click', (event) => {
+            if (event.target === aircraftModal) {
+                closeModal();
+            }
+        });
+
+        function closeModal() {
+            aircraftModal.style.display = 'none';
+            aircraftForm.classList.remove('was-validated'); // Remove validation styles
+        }
+
+        // Load Aircrafts
+        async function loadAircrafts() {
+            try {
+                const response = await fetch('/api/admin/aircraft', {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to load aircrafts');
+                }
+                const aircrafts = await response.json();
+                aircraftTableBody.innerHTML = ''; // Clear existing rows
+
+                aircrafts.forEach(aircraft => {
+                    const row = aircraftTableBody.insertRow();
+                    row.innerHTML = `
+                        <td>${aircraft.id}</td>
+                        <td>${aircraft.code}</td>
+                        <td>${aircraft.manufacturer}</td>
+                        <td>${aircraft.model}</td>
+                        <td>${aircraft.totalSeats}</td>
+                        <td class="action-buttons">
+                            <button class="btn-action btn-edit" onclick="editAircraft(${aircraft.id})">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M16.862 2.25L10.5 8.612m0 0L2.25 16.862m8.25-8.25l7.989 7.989m-7.989-7.989l-7.215 7.215m15.602-5.437L10.5 2.25l-7.215 7.215m7.215 7.215L2.25 16.862" />
+                                </svg>
+                            </button>
+                            <button class="btn-action btn-delete" onclick="deleteAircraft(${aircraft.id})">
+                                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.924a2.25 2.25 0 01-2.244-2.077L4.74 5.79m14.42-3.21a2.25 2.25 0 00-2.124-2.25H5.874a2.25 2.25 0 00-2.25 2.25M12 4.5v15" />
+                                </svg>
+                            </button>
+                        </td>
+                    `;
+                });
+            } catch (error) {
+                console.error('Error loading aircrafts:', error);
+                showToast('Failed to load aircrafts', 'error');
+            }
+        }
+
+        // Handle form submit (Add/Edit Aircraft)
+        aircraftForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+
+            if (!aircraftForm.checkValidity()) {
+                event.stopPropagation();
+                aircraftForm.classList.add('was-validated');
+                return;
+            }
+
+            const id = document.getElementById('aircraftId').value;
+            const aircraftData = {
+                code: document.getElementById('code').value,
+                manufacturer: document.getElementById('manufacturer').value,
+                model: document.getElementById('model').value,
+                totalSeats: parseInt(document.getElementById('totalSeats').value)
+            };
+
+            try {
+                const url = id ? `/api/admin/aircraft/${id}` : '/api/admin/aircraft';
+                const method = id ? 'PUT' : 'POST';
+
+                const response = await fetch(url, {
+                    method: method,
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${token}`
+                    },
+                    body: JSON.stringify(aircraftData)
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to save aircraft');
+                }
+
+                closeModal();
+                loadAircrafts(); // Reload aircrafts list
+                showToast(`Aircraft ${id ? 'updated' : 'added'} successfully`, 'success');
+            } catch (error) {
+                console.error('Error saving aircraft:', error);
+                showToast('Failed to save aircraft', 'error');
+            }
+        });
+
+        // Edit Aircraft
+        async function editAircraft(id) {
+            try {
+                const response = await fetch(`/api/admin/aircraft/${id}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to load aircraft details');
+                }
+                const aircraft = await response.json();
+
+                modalTitle.textContent = 'Edit Aircraft';
+                document.getElementById('aircraftId').value = aircraft.id;
+                document.getElementById('code').value = aircraft.code;
+                document.getElementById('manufacturer').value = aircraft.manufacturer;
+                document.getElementById('model').value = aircraft.model;
+                document.getElementById('totalSeats').value = aircraft.totalSeats;
+
+                aircraftModal.style.display = 'block';
+            } catch (error) {
+                console.error('Error loading aircraft details:', error);
+                showToast('Failed to load aircraft details', 'error');
+            }
+        }
+
+        // Delete Aircraft
+        async function deleteAircraft(id) {
+            if (!confirm('Are you sure you want to delete this aircraft?')) {
+                return;
+            }
+
+            try {
+                const response = await fetch(`/api/admin/aircraft/${id}`, {
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+
+                if (!response.ok) {
+                    throw new Error('Failed to delete aircraft');
+                }
+
+                loadAircrafts();
+                showToast('Aircraft deleted successfully', 'success');
+            } catch (error) {
+                console.error('Error deleting aircraft:', error);
+                showToast('Failed to delete aircraft', 'error');
+            }
+        }
+
+        // Show toast notification
+        function showToast(message, type = 'success') {
+            const toast = document.createElement('div');
+            toast.className = `toast toast-${type}`;
+            toast.innerHTML = `
+                <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
+                    ${type === 'success' 
+                        ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
+                        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+                </svg>
+                ${message}
+            `;
+
+            const container = document.getElementById('toastContainer');
+            container.appendChild(toast);
+
+            setTimeout(() => {
+                toast.remove();
+            }, 3000);
+        }
+
+        // Handle logout
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('jwtToken');
+            window.location.href = '../login.html';
+        });
+
+        // Initial load
+        loadAircrafts();
+    </script>
+</body>
+</html> 
+

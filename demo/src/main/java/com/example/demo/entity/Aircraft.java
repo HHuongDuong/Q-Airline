@@ -6,6 +6,7 @@ import lombok.Setter;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
+import com.fasterxml.jackson.annotation.JsonIgnore; // Import JsonIgnore
 
 @Getter
 @Setter
@@ -23,9 +24,11 @@ public class Aircraft extends BaseEntity {
     private String model;
     private Integer totalSeats;
 
+    @JsonIgnore // Thêm chú thích này để tránh vòng lặp đệ quy
     @OneToMany(mappedBy = "aircraft", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Seat> seats = new ArrayList<>();
 
+    @JsonIgnore
     @OneToMany(mappedBy = "aircraft", cascade = CascadeType.ALL)
     private List<Flight> flights = new ArrayList<>();
 
@@ -42,4 +45,4 @@ public class Aircraft extends BaseEntity {
     protected void onUpdate() {
         updatedAt = LocalDateTime.now();
     }
-} 
+}

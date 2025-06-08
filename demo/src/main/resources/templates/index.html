@@ -257,14 +257,14 @@
     <!-- Navigation -->
     <nav class="qa-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <a class="navbar-brand" href="index.">Q-Airline</a>
             <ul class="nav-links">
-                <li><a class="active" href="index.html">Home</a></li>
-                <li><a href="flights.html">Flights</a></li>
-                <li><a href="tickets.html">My Tickets</a></li>
-                <li><a href="news.html">News</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
+                <li><a class="active" href="index">Home</a></li>
+                <li><a href="flights">Flights</a></li>
+                <li><a href="tickets">My Tickets</a></li>
+                <li><a href="news">News</a></li>
+                <li><a href="login">Login</a></li>
+                <li><a href="register">Register</a></li>
             </ul>
         </div>
     </nav>
@@ -415,7 +415,7 @@
             const passengers = document.getElementById('passengers').value;
 
             // Redirect to flights page with search parameters
-            window.location.href = `flights.html?from=${from}&to=${to}&departure=${departure}&return=${returnDate}&passengers=${passengers}`;
+            window.location.href = `flights.?from=${from}&to=${to}&departure=${departure}&return=${returnDate}&passengers=${passengers}`;
         });
 
         // Newsletter form handling

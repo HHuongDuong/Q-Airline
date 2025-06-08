@@ -1,0 +1,357 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Seat - Q-Airline Admin</title>
+    <link rel="stylesheet" href="/css/brand.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+    <style>
+        .admin-container {
+            max-width: 800px;
+            margin: 2rem auto;
+            padding: 2rem;
+            background: #fff;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            color: var(--qa-primary);
+            text-align: center;
+            margin-bottom: 2rem;
+        }
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 600;
+            color: var(--qa-gray-dark);
+        }
+        .form-control, .form-select {
+            width: 100%;
+            padding: 0.75rem 1rem;
+            border: 1px solid #ddd;
+            border-radius: var(--qa-radius-sm);
+            font-size: 1rem;
+            box-sizing: border-box;
+        }
+        .form-control:focus, .form-select:focus {
+            outline: none;
+            border-color: var(--qa-primary);
+            box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+        }
+        .invalid-feedback {
+            color: #dc3545;
+            font-size: 0.875rem;
+            margin-top: 0.25rem;
+            display: none;
+        }
+        .form-control.is-invalid, .form-select.is-invalid {
+            border-color: #dc3545;
+        }
+        .form-control.is-invalid + .invalid-feedback, .form-select.is-invalid + .invalid-feedback {
+            display: block;
+        }
+        .button-group {
+            display: flex;
+            justify-content: flex-end;
+            gap: 1rem;
+            margin-top: 2rem;
+        }
+        .qa-button-primary, .qa-button-secondary {
+            padding: 0.75rem 1.5rem;
+            border: none;
+            border-radius: var(--qa-radius-sm);
+            cursor: pointer;
+            font-size: 1rem;
+            transition: background-color 0.3s ease;
+        }
+        .qa-button-primary {
+            background-color: var(--qa-primary);
+            color: white;
+        }
+        .qa-button-primary:hover {
+            background-color: var(--qa-primary-dark);
+        }
+        .qa-button-secondary {
+            background-color: #6c757d;
+            color: white;
+        }
+        .qa-button-secondary:hover {
+            background-color: #5a6268;
+        }
+        .loading-spinner, .error-message {
+            text-align: center;
+            margin-top: 2rem;
+        }
+        .loading-spinner {
+            display: none;
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid var(--qa-primary);
+            border-radius: 50%;
+            width: 40px;
+            height: 40px;
+            animation: spin 1s linear infinite;
+            margin: 2rem auto;
+        }
+        .error-message {
+            color: #dc3545;
+            display: none;
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="qa-navbar">
+        <div class="container">
+            <a class="navbar-brand" href="/admin/dashboard">Admin Dashboard</a>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="nav-links">
+                    <li><a href="/admin/dashboard">Dashboard</a></li>
+                    <li><a href="/admin/admin-flights">Flights</a></li>
+                    <li><a class="active" href="/admin/admin-seats">Seats</a></li>
+                    <li><a href="/admin/admin-tickets">Tickets</a></li>
+                    <li><a href="/admin/admin-users">Users</a></li>
+                    <li><a href="/admin/admin-news">News</a></li>
+                    <li><a href="/admin/delays">Delays</a></li>
+                    <li><a href="/admin/admin-aircraft">Aircraft</a></li>
+                    <li><a href="#" id="logoutLink">Logout</a></li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+
+    <!-- Page Content -->
+    <div class="admin-container">
+        <h1>Edit Seat</h1>
+        <form id="editSeatForm">
+            <input type="hidden" id="seatId">
+
+            <div class="form-group">
+                <label for="flightId">Flight ID</label>
+                <input type="number" class="form-control" id="flightId" required>
+                <div class="invalid-feedback">Please enter a valid Flight ID.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="aircraftId">Aircraft ID</label>
+                <input type="number" class="form-control" id="aircraftId" required>
+                <div class="invalid-feedback">Please enter a valid Aircraft ID.</div>
+            </div>
+            
+            <div class="form-group">
+                <label for="seatNumber">Seat Number</label>
+                <input type="text" class="form-control" id="seatNumber" required>
+                <div class="invalid-feedback">Please enter a seat number.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="seatType">Seat Type</label>
+                <select class="form-select" id="seatType" required>
+                    <option value="ECONOMY">Economy</option>
+                    <option value="BUSINESS">Business</option>
+                    <option value="FIRST">First Class</option>
+                </select>
+                <div class="invalid-feedback">Please select a seat type.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="price">Price</label>
+                <input type="number" class="form-control" id="price" step="0.01" required>
+                <div class="invalid-feedback">Please enter a valid price.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="status">Status</label>
+                <select class="form-select" id="status" required>
+                    <option value="AVAILABLE">Available</option>
+                    <option value="OCCUPIED">Occupied</option>
+                    <option value="RESERVED">Reserved</option>
+                </select>
+                <div class="invalid-feedback">Please select a status.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="hasExtraLegroom">Extra Legroom</label>
+                <input type="checkbox" class="form-check-input" id="hasExtraLegroom">
+            </div>
+
+            <div class="form-group">
+                <label for="isEmergencyExit">Emergency Exit</label>
+                <input type="checkbox" class="form-check-input" id="isEmergencyExit">
+            </div>
+
+            <div class="form-group">
+                <label for="isBulkhead">Bulkhead</label>
+                <input type="checkbox" class="form-check-input" id="isBulkhead">
+            </div>
+
+            <div class="form-group">
+                <label for="row">Row</label>
+                <input type="number" class="form-control" id="row" required>
+                <div class="invalid-feedback">Please enter a valid row.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="column">Column</label>
+                <input type="text" class="form-control" id="column" required>
+                <div class="invalid-feedback">Please enter a valid column.</div>
+            </div>
+
+            <div class="form-group">
+                <label for="notes">Notes</label>
+                <textarea class="form-control" id="notes" rows="3"></textarea>
+            </div>
+
+            <div class="button-group">
+                <button type="button" class="qa-button-secondary" onclick="window.location.href='/admin/admin-seats'">Cancel</button>
+                <button type="submit" class="qa-button-primary">Save Changes</button>
+            </div>
+        </form>
+        <div class="loading-spinner" id="loadingSpinner"></div>
+        <div class="error-message" id="errorMessage">Failed to load or save seat details.</div>
+    </div>
+
+    <!-- Footer -->
+    <footer class="qa-footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h5>Q-Airline Admin</h5>
+                    <p>Your trusted partner in air travel.</p>
+                </div>
+                <div class="footer-section">
+                    <h5>Quick Links</h5>
+                    <ul>
+                        <li><a href="#">About Us</a></li>
+                        <li><a href="#">Contact</a></li>
+                        <li><a href="#">Terms & Conditions</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h5>Contact Us</h5>
+                    <p>Email: admin@qairline.com<br>
+                    Phone: +1 234 567 890</p>
+                </div>
+            </div>
+        </div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const logoutLink = document.getElementById('logoutLink');
+        logoutLink.addEventListener('click', (e) => {
+            e.preventDefault();
+            localStorage.removeItem('jwtToken');
+            localStorage.removeItem('userRole');
+            document.cookie = 'jwt=; Path=/; Expires=Thu, 01 Jan 1970 00:00:01 GMT;';
+            window.location.href = '/login';
+        });
+
+        const urlParams = new URLSearchParams(window.location.search);
+        const seatId = urlParams.get('id');
+        const editSeatForm = document.getElementById('editSeatForm');
+        const loadingSpinner = document.getElementById('loadingSpinner');
+        const errorMessage = document.getElementById('errorMessage');
+
+        document.addEventListener('DOMContentLoaded', async () => {
+            if (seatId) {
+                document.getElementById('seatId').value = seatId;
+                await loadSeatDetails(seatId);
+            } else {
+                errorMessage.textContent = 'No seat ID provided for editing.';
+                errorMessage.style.display = 'block';
+            }
+        });
+
+        async function loadSeatDetails(id) {
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+            try {
+                const response = await fetch(`/api/seats/${id}`);
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                const seat = await response.json();
+                document.getElementById('flightId').value = seat.flight.id;
+                document.getElementById('aircraftId').value = seat.aircraft.id;
+                document.getElementById('seatNumber').value = seat.seatNumber;
+                document.getElementById('seatType').value = seat.seatType;
+                document.getElementById('price').value = seat.price;
+                document.getElementById('status').value = seat.status;
+                document.getElementById('hasExtraLegroom').checked = seat.hasExtraLegroom;
+                document.getElementById('isEmergencyExit').checked = seat.isEmergencyExit;
+                document.getElementById('isBulkhead').checked = seat.isBulkhead;
+                document.getElementById('row').value = seat.row;
+                document.getElementById('column').value = seat.column;
+                document.getElementById('notes').value = seat.notes;
+            } catch (error) {
+                console.error('Error loading seat details:', error);
+                errorMessage.textContent = 'Failed to load seat details. ' + error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        }
+
+        editSeatForm.addEventListener('submit', async (event) => {
+            event.preventDefault();
+            
+            if (!editSeatForm.checkValidity()) {
+                editSeatForm.classList.add('was-validated');
+                return;
+            }
+
+            loadingSpinner.style.display = 'block';
+            errorMessage.style.display = 'none';
+
+            const updatedSeat = {
+                id: document.getElementById('seatId').value,
+                flightId: parseInt(document.getElementById('flightId').value),
+                aircraftId: parseInt(document.getElementById('aircraftId').value),
+                seatNumber: document.getElementById('seatNumber').value,
+                seatType: document.getElementById('seatType').value,
+                price: parseFloat(document.getElementById('price').value),
+                status: document.getElementById('status').value,
+                hasExtraLegroom: document.getElementById('hasExtraLegroom').checked,
+                isEmergencyExit: document.getElementById('isEmergencyExit').checked,
+                isBulkhead: document.getElementById('isBulkhead').checked,
+                row: parseInt(document.getElementById('row').value),
+                column: document.getElementById('column').value,
+                notes: document.getElementById('notes').value
+            };
+
+            try {
+                const response = await fetch(`/api/seats/${seatId}`, {
+                    method: 'PUT',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(updatedSeat)
+                });
+
+                if (!response.ok) {
+                    const errorData = await response.json();
+                    throw new Error(errorData.message || 'Failed to update seat.');
+                }
+
+                alert('Seat updated successfully!');
+                window.location.href = '/admin/admin-seats';
+            } catch (error) {
+                console.error('Error updating seat:', error);
+                errorMessage.textContent = 'Failed to update seat. ' + error.message;
+                errorMessage.style.display = 'block';
+            } finally {
+                loadingSpinner.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
+

@@ -11,48 +11,53 @@ public class ViewController {
         return "login.html";
     }
 
-    @GetMapping("/register.html")
+    @GetMapping("/register")
     public String register() {
-        return "register.html";
+        return "register";
     }
 
-    @GetMapping({"/index.html", "/"})
+    @GetMapping({"/index", "/"})
     public String index() {
-        return "index.html";
+        return "index";
     }
 
-    @GetMapping("/flights.html")
+    @GetMapping("/flights")
     public String flights() {
-        return "flights.html";
+        return "flights";
     }
 
-    @GetMapping("/news.html")
+    @GetMapping("/news")
     public String news() {
-        return "news.html";
+        return "news";
     }
 
-    @GetMapping("/tickets.html")
+    @GetMapping("/tickets")
     public String tickets() {
-        return "tickets.html";
+        return "tickets";
     }
 
-    @GetMapping("/flight-detail.html")
+    @GetMapping("/ticket-detail.html")
+    public String ticketDetail() {  
+        return "ticket-detail.html";
+    }
+
+    @GetMapping("/flight-detail")
     public String flightDetail() {
-        return "flight-detail.html";
+        return "flight-detail";
     }
 
-    @GetMapping("/seat-selection.html")
+    @GetMapping("/seat-selection")
     public String seatSelection() {
-        return "seat-selection.html";
+        return "seat-selection";
     }
 
-    @GetMapping("/news-detail.html")
+    @GetMapping("/news-detail")
     public String newsDetail() {
-        return "news-detail.html";
+        return "news-detail";
     }
 
-    @GetMapping("/flight.html")
+    @GetMapping("/flight")
     public String flight() {
-        return "flight.html";
+        return "flight";
     }
-} 
+}

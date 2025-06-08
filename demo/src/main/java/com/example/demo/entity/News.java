@@ -21,6 +21,9 @@ public class News {
     @Column(nullable = false, columnDefinition = "TEXT")
     private String content;
 
+    @Column(name = "image_url")
+    private String imageUrl;
+
     @Column(nullable = false)
     private String type;
 

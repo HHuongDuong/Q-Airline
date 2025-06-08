@@ -2,9 +2,11 @@ package com.example.demo.dto;
 
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 
-@Data
+@Getter
+@Setter
 public class SeatDTO {
     private Long id;
     private Long flightId;

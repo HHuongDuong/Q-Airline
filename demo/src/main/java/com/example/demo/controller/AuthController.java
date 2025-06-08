@@ -54,6 +54,7 @@ public class AuthController {
         user.setPassword(passwordEncoder.encode(request.password.trim()));
         user.setEmail(request.email);
         user.setFullName(request.fullName);
+        user.setPhoneNumber(request.phoneNumber);
         user.setRole(com.example.demo.enums.UserRole.USER);
         userService.createUser(user);
         return ResponseEntity.ok(new MessageResponse("Đăng ký thành công!"));

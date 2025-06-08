@@ -27,12 +27,27 @@ public class SeatMapDTO {
     private Boolean isBulkhead;
     private String notes;
 
-    public boolean isAvailable() {
-        return status == SeatStatus.AVAILABLE;
+    public SeatMapDTO(Long id, String seatNumber, SeatType seatType, SeatStatus status, Double price,
+                      boolean hasExtraLegroom, boolean isEmergencyExit, boolean isBulkhead, int row, int column,
+                      String notes, Long flightId, Long aircraftId, boolean selected) {
+        this.id = id;
+        this.seatNumber = seatNumber;
+        this.seatType = seatType;
+        this.status = status;
+        this.price = price;
+        this.hasExtraLegroom = hasExtraLegroom;
+        this.isEmergencyExit = isEmergencyExit;
+        this.isBulkhead = isBulkhead;
+        this.row = row;
+        this.column = column;
+        this.notes = notes;
+        this.flightId = flightId;
+        // aircraftId is not directly mapped to a field in SeatMapDTO, if needed, add a field for it.
+        this.selected = selected;
     }
 
-    public boolean isReserved() {
-        return status == SeatStatus.RESERVED;
+    public boolean isAvailable() {
+        return status == SeatStatus.AVAILABLE;
     }
 
     public boolean isOccupied() {

@@ -436,7 +436,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="admin.html" class="nav-link">
+                    <a href="/admin/admin" class="nav-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                             <path d="M9 22V12h6v10"/>
@@ -445,7 +445,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="flights.html" class="nav-link active">
+                    <a href="/admin/admin-flights" class="nav-link active">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"/>
                             <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
@@ -454,7 +454,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="tickets.html" class="nav-link">
+                    <a href="/admin/admin-tickets" class="nav-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <rect x="3" y="4" width="18" height="18" rx="2" ry="2"/>
                             <line x1="16" y1="2" x2="16" y2="6"/>
@@ -465,7 +465,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="users.html" class="nav-link">
+                    <a href="/admin/admin-users" class="nav-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M17 21v-2a4 4 0 00-4-4H5a4 4 0 00-4 4v2"/>
                             <circle cx="9" cy="7" r="4"/>
@@ -476,7 +476,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="news.html" class="nav-link">
+                    <a href="/admin/admin-news" class="nav-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M19 20H5a2 2 0 01-2-2V6a2 2 0 012-2h10a2 2 0 012 2v1m2 13a2 2 0 01-2-2V7m2 13a2 2 0 002-2V9a2 2 0 00-2-2h-2m-4-3H9M7 16h6M7 8h6v4H7V8z"/>
                         </svg>
@@ -551,14 +551,14 @@
                     <div class="invalid-feedback">Please enter a valid flight number</div>
                 </div>
                 <div class="form-group">
-                    <label for="departureCity">Departure City</label>
-                    <input type="text" class="form-control" id="departureCity" required>
-                    <div class="invalid-feedback">Please enter departure city</div>
+                    <label for="departureAirport">Departure Airport</label>
+                    <input type="text" class="form-control" id="departureAirport" required>
+                    <div class="invalid-feedback">Please enter departure airport</div>
                 </div>
                 <div class="form-group">
-                    <label for="arrivalCity">Arrival City</label>
-                    <input type="text" class="form-control" id="arrivalCity" required>
-                    <div class="invalid-feedback">Please enter arrival city</div>
+                    <label for="arrivalAirport">Arrival Airport</label>
+                    <input type="text" class="form-control" id="arrivalAirport" required>
+                    <div class="invalid-feedback">Please enter arrival airport</div>
                 </div>
                 <div class="form-group">
                     <label for="departureTime">Departure Time</label>
@@ -591,9 +591,10 @@
                 <div class="form-group">
                     <label for="status">Status</label>
                     <select class="form-control" id="status" required>
-                        <option value="scheduled">Scheduled</option>
-                        <option value="active">Active</option>
-                        <option value="cancelled">Cancelled</option>
+                        <option value="SCHEDULED">Scheduled</option>
+                        <option value="ACTIVE">Active</option>
+                        <option value="CANCELLED">Cancelled</option>
+                        <option value="DELAYED">Delayed</option>
                     </select>
                     <div class="invalid-feedback">Please select status</div>
                 </div>
@@ -616,14 +617,38 @@
         const logoutLink = document.getElementById('logoutLink');
 
         // Format date
-        function formatDate(dateString) {
-            const options = { 
-                month: 'short', 
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            };
-            return new Date(dateString).toLocaleDateString('en-US', options);
+        function formatDate(dateInput) {
+            if (!dateInput) return '';
+            let date;
+            try {
+                if (Array.isArray(dateInput)) {
+                    // Handle array input [year, month, day, hour, minute, second, nano_of_second]
+                    const [year, month, day, hour, minute, second = 0, nano = 0] = dateInput;
+                    // Month is 0-indexed in JavaScript Date, so subtract 1
+                    date = new Date(year, month - 1, day, hour, minute, second, nano / 1_000_000); // convert nanos to milliseconds
+                } else {
+                    // Handle string input (e.g., from updated/added flights)
+                    date = new Date(dateInput);
+                }
+
+                if (isNaN(date.getTime())) {
+                    console.error('Invalid date for display:', dateInput);
+                    return 'Invalid Date';
+                }
+
+                const options = {
+                    year: 'numeric',
+                    month: 'short',
+                    day: 'numeric',
+                    hour: '2-digit',
+                    minute: '2-digit',
+                    hour12: false // Use 24-hour format
+                };
+                return date.toLocaleDateString('en-US', options) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false });
+            } catch (error) {
+                console.error('Error formatting date for display:', error);
+                return 'Invalid Date';
+            }
         }
 
         // Get status badge class
@@ -641,12 +666,12 @@
         }
 
         // Pagination
-        let currentPage = 1;
+        let currentPage = 0;
         const itemsPerPage = 10;
         let totalPages = 1;
 
         // Load flights with pagination
-        async function loadFlights(page = 1) {
+        async function loadFlights(page = 0) {
             loadingSpinner.style.display = 'block';
             errorMessage.style.display = 'none';
 
@@ -666,7 +691,7 @@
                 flightsTableBody.innerHTML = flights.map(flight => `
                     <tr>
                         <td>${flight.flightNumber}</td>
-                        <td>${flight.departureCity} → ${flight.arrivalCity}</td>
+                        <td>${flight.departureAirport} → ${flight.arrivalAirport}</td>
                         <td>${formatDate(flight.departureTime)}</td>
                         <td>${formatDate(flight.arrivalTime)}</td>
                         <td>
@@ -765,13 +790,13 @@
                 document.getElementById('modalTitle').textContent = 'Edit Flight';
                 document.getElementById('flightId').value = flight.id;
                 document.getElementById('flightNumber').value = flight.flightNumber;
-                document.getElementById('departureCity').value = flight.departureCity;
-                document.getElementById('arrivalCity').value = flight.arrivalCity;
+                document.getElementById('departureAirport').value = flight.departureAirport;
+                document.getElementById('arrivalAirport').value = flight.arrivalAirport;
                 document.getElementById('departureTime').value = formatDateTimeForInput(flight.departureTime);
                 document.getElementById('arrivalTime').value = formatDateTimeForInput(flight.arrivalTime);
                 
                 // Load aircrafts and then select the correct one
-                await loadAircrafts(flight.aircraft.id); 
+                await loadAircrafts(flight.aircraftId); 
 
                 document.getElementById('totalSeats').value = flight.totalSeats;
                 document.getElementById('availableSeats').value = flight.availableSeats;
@@ -817,9 +842,36 @@
         }
 
         // Format date for input
-        function formatDateTimeForInput(dateString) {
-            const date = new Date(dateString);
-            return date.toISOString().slice(0, 16);
+        function formatDateTimeForInput(dateInput) {
+            if (!dateInput) return '';
+            try {
+                let date;
+                if (Array.isArray(dateInput)) {
+                    // Handle array input [year, month, day, hour, minute]
+                    const [year, month, day, hour, minute] = dateInput;
+                    date = new Date(year, month - 1, day, hour, minute);
+                } else {
+                    // Handle string input
+                    date = new Date(dateInput);
+                }
+                
+                if (isNaN(date.getTime())) {
+                    console.error('Invalid date:', dateInput);
+                    return '';
+                }
+                
+                // Format: YYYY-MM-DDThh:mm
+                const year = date.getFullYear();
+                const month = String(date.getMonth() + 1).padStart(2, '0');
+                const day = String(date.getDate()).padStart(2, '0');
+                const hours = String(date.getHours()).padStart(2, '0');
+                const minutes = String(date.getMinutes()).padStart(2, '0');
+                
+                return `${year}-${month}-${day}T${hours}:${minutes}`;
+            } catch (error) {
+                console.error('Error formatting date:', error);
+                return '';
+            }
         }
 
         // Handle form submit
@@ -837,8 +889,8 @@
             const flightId = document.getElementById('flightId').value;
             const flightData = {
                 flightNumber: document.getElementById('flightNumber').value,
-                departureCity: document.getElementById('departureCity').value,
-                arrivalCity: document.getElementById('arrivalCity').value,
+                departureAirport: document.getElementById('departureAirport').value,
+                arrivalAirport: document.getElementById('arrivalAirport').value,
                 departureTime: document.getElementById('departureTime').value,
                 arrivalTime: document.getElementById('arrivalTime').value,
                 aircraftId: document.getElementById('aircraftId').value,
@@ -881,7 +933,7 @@
                 <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" width="20" height="20">
                     ${type === 'success' 
                         ? '<path d="M22 11.08V12a10 10 0 1 1-5.93-9.14"/><polyline points="22 4 12 14.01 9 11.01"/>'
-                        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12.01" y2="16"/>'}
+                        : '<circle cx="12" cy="12" r="10"/><line x1="12" y1="8" x2="12" y2="12"/><line x1="12" y1="16" x2="12" y2="16"/>'}
                 </svg>
                 ${message}
             `;

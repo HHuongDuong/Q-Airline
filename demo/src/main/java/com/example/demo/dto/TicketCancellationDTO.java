@@ -1,10 +1,12 @@
 package com.example.demo.dto;
 
 import com.example.demo.enums.CancellationStatus;
-import lombok.Data;
+import lombok.Getter;
+import lombok.Setter;
 import java.time.LocalDateTime;
 
-@Data
+@Getter
+@Setter
 public class TicketCancellationDTO {
     private Long id;
     private Long ticketId;

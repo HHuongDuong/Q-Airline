@@ -22,8 +22,8 @@ public interface SeatRepository extends JpaRepository<Seat, Long> {
     List<Seat> findByFlight_IdAndStatus(Long flightId, SeatStatus status);
     List<Seat> findByFlightAndSeatType(Flight flight, SeatType seatType);
     List<Seat> findByFlight_IdAndSeatType(Long flightId, SeatType seatType);
-    List<Seat> findByFlightAndSeatNumber(Flight flight, String seatNumber);
-    List<Seat> findByFlight_IdAndSeatNumber(Long flightId, String seatNumber);
+    Optional<Seat> findByFlightAndSeatNumber(Flight flight, String seatNumber);
+    Optional<Seat> findByFlight_IdAndSeatNumber(Long flightId, String seatNumber);
     List<Seat> findByFlightAndHasExtraLegroom(Flight flight, boolean hasExtraLegroom);
     List<Seat> findByFlight_IdAndHasExtraLegroom(Long flightId, boolean hasExtraLegroom);
     List<Seat> findByFlightAndIsEmergencyExit(Flight flight, boolean isEmergencyExit);

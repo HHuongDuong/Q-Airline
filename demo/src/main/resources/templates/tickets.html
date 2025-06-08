@@ -315,8 +315,14 @@
         let tickets = [];
         let currentFilter = 'all';
 
+        // Helper function to parse the date array [year, month, day, hour, minute]
+        function parseDateArray(dateArray) {
+            // Month is 0-indexed in JavaScript Date constructor (0-11)
+            return new Date(dateArray[0], dateArray[1] - 1, dateArray[2], dateArray[3], dateArray[4]);
+        }
+
         // Format date
-        function formatDate(dateString) {
+        function formatDate(dateArray) {
             const options = { 
                 weekday: 'short', 
                 year: 'numeric', 
@@ -325,7 +331,7 @@
                 hour: '2-digit',
                 minute: '2-digit'
             };
-            return new Date(dateString).toLocaleDateString('en-US', options);
+            return new Date(dateArray[0], dateArray[1] - 1, dateArray[2], dateArray[3], dateArray[4]).toLocaleDateString('en-US', options);
         }
 
         // Format duration
@@ -335,10 +341,26 @@
             return `${hours}h ${mins}m`;
         }
 
+        // Calculate duration
+        function calculateDuration(departureTimeArray, arrivalTimeArray) {
+            const departure = parseDateArray(departureTimeArray);
+            const arrival = parseDateArray(arrivalTimeArray);
+            const diffMs = arrival.getTime() - departure.getTime();
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMinutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            return `${diffHours}h ${diffMinutes}m`;
+        }
+
         // Create ticket card
         function createTicketCard(ticket) {
-            const departureDate = new Date(ticket.flight.departureTime);
-            const arrivalDate = new Date(ticket.flight.arrivalTime);
+            // The API now returns flattened flight details directly in the ticket object
+            // No need for ticket.flight checks here as the data is directly available on ticket
+            if (!ticket) {
+                return ''; // Skip if ticket itself is undefined
+            }
+
+            const departureDate = parseDateArray(ticket.departureTime);
+            const arrivalDate = parseDateArray(ticket.arrivalTime);
             const isPast = departureDate < new Date();
             const isCancelled = ticket.status === 'CANCELLED';
 
@@ -346,7 +368,7 @@
                 <div class="ticket-card" data-status="${ticket.status.toLowerCase()}" data-date="${departureDate.toISOString()}">
                     <div class="ticket-header">
                         <div>
-                            <span class="ticket-number">Ticket #${ticket.ticketNumber}</span>
+                            <span class="ticket-number">Ticket #${ticket.ticketNumber || 'N/A'}</span>
                         </div>
                         <span class="ticket-status status-${ticket.status.toLowerCase()}">${ticket.status}</span>
                     </div>
@@ -354,31 +376,31 @@
                         <div class="flight-info">
                             <div class="flight-route">
                                 <div class="flight-time">${departureDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div class="flight-date">${formatDate(ticket.flight.departureTime)}</div>
-                                <div class="airport-code">${ticket.flight.departureAirport}</div>
+                                <div class="flight-date">${formatDate(ticket.departureTime)}</div>
+                                <div class="airport-code">${ticket.departureAirport || 'N/A'}</div>
                             </div>
                             <div class="flight-duration">
                                 <div class="flight-duration-line"></div>
-                                <div>${formatDuration(ticket.flight.duration)}</div>
+                                <div>${calculateDuration(ticket.departureTime, ticket.arrivalTime)}</div>
                             </div>
                             <div class="flight-route">
                                 <div class="flight-time">${arrivalDate.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' })}</div>
-                                <div class="flight-date">${formatDate(ticket.flight.arrivalTime)}</div>
-                                <div class="airport-code">${ticket.flight.arrivalAirport}</div>
+                                <div class="flight-date">${formatDate(ticket.arrivalTime)}</div>
+                                <div class="airport-code">${ticket.arrivalAirport || 'N/A'}</div>
                             </div>
                         </div>
                         <div class="ticket-details">
                             <div class="detail-item">
                                 <span class="detail-label">Passenger</span>
-                                <span class="detail-value">${ticket.passengerName}</span>
+                                <span class="detail-value">${ticket.fullName || 'N/A'}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Seat</span>
-                                <span class="detail-value">${ticket.seatNumber}</span>
+                                <span class="detail-value">${ticket.seatNumber || 'N/A'}</span>
                             </div>
                             <div class="detail-item">
                                 <span class="detail-label">Class</span>
-                                <span class="detail-value">${ticket.class}</span>
+                                <span class="detail-value">${ticket.seatType || 'N/A'}</span>
                             </div>
                         </div>
                         <div class="ticket-actions">
@@ -405,7 +427,12 @@
         // Filter tickets
         function filterTickets() {
             const filteredTickets = tickets.filter(ticket => {
-                const departureDate = new Date(ticket.flight.departureTime);
+                if (!ticket) {
+                    return false; // Skip tickets without flight information
+                }
+                // The API now returns flattened flight details directly in the ticket object
+                // No need for ticket.flight checks here as the data is directly available on ticket
+                const departureDate = parseDateArray(ticket.departureTime);
                 const now = new Date();
 
                 switch (currentFilter) {
@@ -438,16 +465,16 @@
             errorMessage.style.display = 'none';
 
             try {
-                const token = localStorage.getItem('token');
-                if (!token) {
-                    window.location.href = 'login.html';
-                    return;
-                }
+                // const token = localStorage.getItem('token'); // JWT is now HttpOnly, not accessible via localStorage
+                // if (!token) {
+                //     window.location.href = 'login.html';
+                //     return;
+                // }
 
                 const response = await fetch('/api/tickets', {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    // headers: {
+                    //     'Authorization': `Bearer ${token}` // JWT will be sent via HttpOnly cookie
+                    // }
                 });
 
                 if (!response.ok) {
@@ -476,12 +503,11 @@
             }
 
             try {
-                const token = localStorage.getItem('token');
+                // const token = localStorage.getItem('token'); // JWT is now HttpOnly, not accessible via localStorage
                 const response = await fetch(`/api/tickets/${ticketId}/cancel`, {
-                    method: 'POST',
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    // headers: {
+                    //     'Authorization': `Bearer ${token}` // JWT will be sent via HttpOnly cookie
+                    // }
                 });
 
                 if (!response.ok) {
@@ -498,11 +524,11 @@
         // Download ticket
         async function downloadTicket(ticketId) {
             try {
-                const token = localStorage.getItem('token');
+                // const token = localStorage.getItem('token'); // JWT is now HttpOnly, not accessible via localStorage
                 const response = await fetch(`/api/tickets/${ticketId}/download`, {
-                    headers: {
-                        'Authorization': `Bearer ${token}`
-                    }
+                    // headers: {
+                    //     'Authorization': `Bearer ${token}` // JWT will be sent via HttpOnly cookie
+                    // }
                 });
 
                 if (!response.ok) {
@@ -539,3 +565,4 @@
     </script>
 </body>
 </html> 
+

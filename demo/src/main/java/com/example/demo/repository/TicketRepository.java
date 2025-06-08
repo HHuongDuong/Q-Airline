@@ -10,9 +10,15 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.stereotype.Repository;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Optional;
+import org.springframework.data.jpa.repository.EntityGraph;;
 
 @Repository
 public interface TicketRepository extends JpaRepository<Ticket, Long> {
+
+    @EntityGraph(attributePaths = {"user", "flight", "seat"})
+    Optional<Ticket> findById(Long id);
+
     List<Ticket> findByUser(User user);
     List<Ticket> findByFlight(Flight flight);
     List<Ticket> findBySeat(Seat seat);

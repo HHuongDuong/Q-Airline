@@ -1,6 +1,8 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.NewsDTO;
+import com.example.demo.dto.NewsRequestDTO;
+import com.example.demo.dto.NewsResponseDTO;
 import com.example.demo.entity.News;
 import com.example.demo.entity.User;
 import com.example.demo.service.NewsService;
@@ -19,31 +21,29 @@ import java.util.List;
 public class NewsController {
 
     private final NewsService newsService;
-    private final UserService userService;
 
     @PostMapping
-    public ResponseEntity<NewsDTO> createNews(@RequestBody NewsDTO newsDTO, 
-                                            @AuthenticationPrincipal User currentUser) {
-        NewsDTO createdNews = newsService.createNews(newsDTO, currentUser);
+    public ResponseEntity<NewsResponseDTO> createNews(@RequestBody NewsRequestDTO newsRequestDTO) {
+        NewsResponseDTO createdNews = newsService.createNews(newsRequestDTO);
         return ResponseEntity.ok(createdNews);
     }
 
     @PutMapping("/{id}")
-    public ResponseEntity<NewsDTO> updateNews(@PathVariable Long id, 
-                                            @RequestBody NewsDTO newsDTO) {
-        NewsDTO updatedNews = newsService.updateNews(id, newsDTO);
+    public ResponseEntity<NewsResponseDTO> updateNews(@PathVariable Long id, 
+                                            @RequestBody NewsRequestDTO newsRequestDTO) {
+        NewsResponseDTO updatedNews = newsService.updateNews(id, newsRequestDTO);
         return ResponseEntity.ok(updatedNews);
     }
 
     @GetMapping
-    public ResponseEntity<List<NewsDTO>> getAllActiveNews() {
-        List<NewsDTO> news = newsService.getAllActiveNews();
+    public ResponseEntity<List<NewsResponseDTO>> getAllActiveNews() {
+        List<NewsResponseDTO> news = newsService.getAllActiveNews();
         return ResponseEntity.ok(news);
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<NewsDTO> getNewsById(@PathVariable Long id) {
-        NewsDTO news = newsService.getNewsById(id);
+    public ResponseEntity<NewsResponseDTO> getNewsById(@PathVariable Long id) {
+        NewsResponseDTO news = newsService.getNewsById(id);
         return ResponseEntity.ok(news);
     }
 

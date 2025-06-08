@@ -32,6 +32,7 @@ public interface SeatService {
     List<Seat> getEmergencyExitSeats(Long flightId);
     List<Seat> getSeatsByRow(Long flightId, String row);
     List<SeatMapDTO> getSeatMap(Long flightId);
+    public Seat reserveSeat(Long seatId);
     List<Seat> searchSeats(SeatSearchCriteria criteria);
     List<Seat> getRecommendedSeats(Long flightId, SeatType seatType, Boolean hasExtraLegroom, Boolean emergencyExit);
     List<Seat> findCheapestSeats(Long flightId);
@@ -47,7 +48,6 @@ public interface SeatService {
     Seat blockSeat(Long seatId);
     Seat unblockSeat(Long seatId);
     Seat updateSeatStatus(Long seatId, SeatStatus status);
-    Seat reserveSeat(Long seatId);
     Seat occupySeat(Long seatId);
     Seat releaseSeat(Long seatId);
     Seat putSeatInMaintenance(Long seatId);

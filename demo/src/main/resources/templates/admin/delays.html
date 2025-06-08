@@ -387,7 +387,7 @@
             </div>
             <ul class="nav-menu">
                 <li class="nav-item">
-                    <a href="admin.html" class="nav-link">
+                    <a href="admin" class="nav-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2V9z"/>
                             <path d="M9 22V12h6v10"/>
@@ -396,7 +396,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="flights.html" class="nav-link">
+                    <a href="flights" class="nav-link">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 19l7-7 3 3-7 7-3-3z"/>
                             <path d="M18 13l-1.5-7.5L2 2l3.5 14.5L13 18l5-5z"/>
@@ -405,7 +405,7 @@
                     </a>
                 </li>
                 <li class="nav-item">
-                    <a href="delays.html" class="nav-link active">
+                    <a href="delays" class="nav-link active">
                         <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
                             <path d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"/>
                         </svg>
@@ -480,12 +480,10 @@
             <form id="delayForm" onsubmit="handleDelaySubmit(event)">
                 <input type="hidden" id="delayId">
                 <div class="form-group">
-                    <label for="flightNumber">Flight Number</label>
-                    <input type="text" id="flightNumber" class="form-control" required>
-                </div>
-                <div class="form-group">
-                    <label for="route">Route</label>
-                    <input type="text" id="route" class="form-control" required>
+                    <label for="flightId">Flight</label>
+                    <select id="flightId" class="form-control" required>
+                        <option value="">Select Flight</option>
+                    </select>
                 </div>
                 <div class="form-group">
                     <label for="delayDuration">Delay Duration (minutes)</label>
@@ -523,6 +521,8 @@
         const delayForm = document.getElementById('delayForm');
         const modalTitle = document.getElementById('modalTitle');
         const logoutLink = document.getElementById('logoutLink');
+        const flightIdSelect = document.getElementById('flightId');
+        let allFlights = [];
 
         // Show toast notification
         function showToast(message, type = 'success') {
@@ -546,13 +546,43 @@
             }, 3000);
         }
 
+        // Load flights for dropdown
+        async function loadFlights() {
+            try {
+                const response = await fetch('/api/admin/flights?page=0&size=1000', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                });
+                if (!response.ok) {
+                    throw new Error('Failed to load flights');
+                }
+                const data = await response.json();
+                allFlights = data.content; // Store all flights
+                flightIdSelect.innerHTML = '<option value="">Select Flight</option>';
+                allFlights.forEach(flight => {
+                    const option = document.createElement('option');
+                    option.value = flight.id;
+                    option.textContent = `${flight.flightNumber} (${flight.departureAirport} to ${flight.arrivalAirport})`;
+                    flightIdSelect.appendChild(option);
+                });
+            } catch (error) {
+                console.error('Error loading flights:', error);
+                showToast('Failed to load flights for dropdown', 'error');
+            }
+        }
+
         // Load delays
         async function loadDelays() {
             loadingSpinner.style.display = 'block';
             errorMessage.style.display = 'none';
 
             try {
-                const response = await fetch('/api/admin/delays');
+                const response = await fetch('/api/admin/delays', {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                });
                 if (!response.ok) {
                     throw new Error('Failed to load delays');
                 }
@@ -571,7 +601,7 @@
         // Render delays table
         function renderDelays(delays) {
             delaysTableBody.innerHTML = delays.map(delay => `
-                <tr>
+                <tr data-delay-id="${delay.id}">
                     <td>${delay.flightNumber}</td>
                     <td>${delay.route}</td>
                     <td>${delay.delayDuration} minutes</td>
@@ -606,13 +636,18 @@
             modalTitle.textContent = 'Add Delay';
             delayForm.reset();
             document.getElementById('delayId').value = '';
+            flightIdSelect.value = ''; // Reset selected flight
             delayModal.style.display = 'block';
         }
 
         // Open edit delay modal
         async function editDelay(delayId) {
             try {
-                const response = await fetch(`/api/admin/delays/${delayId}`);
+                const response = await fetch(`/api/admin/delays/${delayId}`, {
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
+                });
                 if (!response.ok) {
                     throw new Error('Failed to load delay details');
                 }
@@ -620,8 +655,7 @@
                 const delay = await response.json();
                 modalTitle.textContent = 'Edit Delay';
                 document.getElementById('delayId').value = delay.id;
-                document.getElementById('flightNumber').value = delay.flightNumber;
-                document.getElementById('route').value = delay.route;
+                flightIdSelect.value = delay.flightId; // Set selected flight by ID
                 document.getElementById('delayDuration').value = delay.delayDuration;
                 document.getElementById('reason').value = delay.reason;
                 document.getElementById('status').value = delay.status;
@@ -644,8 +678,7 @@
             const isEdit = delayId !== '';
 
             const delayData = {
-                flightNumber: document.getElementById('flightNumber').value,
-                route: document.getElementById('route').value,
+                flightId: flightIdSelect.value, // Use flightId
                 delayDuration: parseInt(document.getElementById('delayDuration').value),
                 reason: document.getElementById('reason').value,
                 status: document.getElementById('status').value
@@ -655,7 +688,8 @@
                 const response = await fetch(`/api/admin/delays${isEdit ? `/${delayId}` : ''}`, {
                     method: isEdit ? 'PUT' : 'POST',
                     headers: {
-                        'Content-Type': 'application/json'
+                        'Content-Type': 'application/json',
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
                     },
                     body: JSON.stringify(delayData)
                 });
@@ -668,7 +702,7 @@
                 loadDelays();
                 showToast(`Delay ${isEdit ? 'updated' : 'added'} successfully`);
             } catch (error) {
-                console.error(`Error ${isEdit ? 'updating' : 'adding'} delay:`, error);
+                console.error(`Error ${isEdit ? 'updating' : 'add'} delay:`, error);
                 showToast(`Failed to ${isEdit ? 'update' : 'add'} delay`, 'error');
             }
         }
@@ -681,7 +715,10 @@
 
             try {
                 const response = await fetch(`/api/admin/delays/${delayId}`, {
-                    method: 'DELETE'
+                    method: 'DELETE',
+                    headers: {
+                        'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                    }
                 });
 
                 if (!response.ok) {
@@ -699,12 +736,16 @@
         // Handle logout
         logoutLink.addEventListener('click', (e) => {
             e.preventDefault();
-            localStorage.removeItem('token');
+            localStorage.removeItem('jwtToken'); // Corrected from 'token' to 'jwtToken'
             window.location.href = '../login.html';
         });
 
-        // Initial load
-        loadDelays();
+        // Initial loads
+        document.addEventListener('DOMContentLoaded', () => {
+            loadFlights();
+            loadDelays();
+        });
     </script>
 </body>
 </html> 
+

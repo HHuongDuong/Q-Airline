@@ -1,16 +1,17 @@
 package com.example.demo.service;
 
-import com.example.demo.dto.NewsDTO;
+import com.example.demo.dto.NewsRequestDTO;
+import com.example.demo.dto.NewsResponseDTO;
 import com.example.demo.entity.News;
 import com.example.demo.entity.User;
 import java.time.LocalDateTime;
 import java.util.List;
 
 public interface NewsService {
-    NewsDTO createNews(NewsDTO newsDTO, User author);
-    List<NewsDTO> getAllActiveNews();
-    NewsDTO getNewsById(Long id);
-    NewsDTO updateNews(Long id, NewsDTO newsDTO);
+    NewsResponseDTO createNews(NewsRequestDTO newsRequestDTO);
+    List<NewsResponseDTO> getAllActiveNews();
+    NewsResponseDTO getNewsById(Long id);
+    NewsResponseDTO updateNews(Long id, NewsRequestDTO newsRequestDTO);
     void deleteNews(Long id);
     List<News> getAllNews();
     List<News> getNewsByDateRange(LocalDateTime start, LocalDateTime end);

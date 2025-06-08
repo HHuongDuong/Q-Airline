@@ -1,0 +1,105 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Ticket Detail</title>
+    <link rel="stylesheet" href="/css/brand.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Ticket Detail</h1>
+        <div id="ticket-detail">
+            <!-- Ticket details will be loaded here -->
+        </div>
+        <button id="cancel-ticket">Cancel Ticket</button>
+    </div>
+
+    <script>
+        // Helper function to parse the date array [year, month, day, hour, minute, second, nanosecond]
+        function parseDateArray(dateArray) {
+            // Month is 0-indexed in JavaScript Date constructor (0-11)
+            // We only care about year, month, day, hour, minute
+            return new Date(dateArray[0], dateArray[1] - 1, dateArray[2], dateArray[3], dateArray[4]);
+        }
+
+        // Format date and time for display
+        function formatDateTime(dateArray) {
+            const date = parseDateArray(dateArray);
+            const options = {
+                year: 'numeric',
+                month: 'short',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            };
+            return date.toLocaleDateString('en-US', options) + ' ' + date.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' });
+        }
+
+        // Get ticket ID from URL
+        const urlParams = new URLSearchParams(window.location.search);
+        const ticketId = urlParams.get('id');
+
+        // Load ticket details
+        fetch(`/api/tickets/${ticketId}`)
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
+                }
+                return response.json();
+            })
+            .then(ticket => {
+                const ticketDetail = document.getElementById('ticket-detail');
+                // Use default values if properties are null or undefined
+                const flightNumber = ticket.flightNumber || 'N/A';
+                const departureAirport = ticket.departureAirport || 'N/A';
+                const arrivalAirport = ticket.arrivalAirport || 'N/A';
+                const seatNumber = ticket.seatNumber || 'N/A';
+                const seatRow = ticket.seatRow || ''; // Seat row might be 0, so check for null/undefined
+                const seatColumn = ticket.seatColumn || ''; // Seat column might be 0, so check for null/undefined
+                const seatType = ticket.seatType || 'N/A';
+                const status = ticket.status || 'N/A';
+
+                const departureDateTime = ticket.departureTime ? formatDateTime(ticket.departureTime) : 'N/A';
+                const arrivalDateTime = ticket.arrivalTime ? formatDateTime(ticket.arrivalTime) : 'N/A';
+
+                ticketDetail.innerHTML = `
+                    <p><strong>Flight Number:</strong> ${flightNumber}</p>
+                    <p><strong>Departure:</strong> ${departureAirport} (${departureDateTime})</p>
+                    <p><strong>Arrival:</strong> ${arrivalAirport} (${arrivalDateTime})</p>
+                    <p><strong>Seat:</strong> ${seatRow}${seatColumn} (${seatNumber})</p>
+                    <p><strong>Class:</strong> ${seatType}</p>
+                    <p><strong>Status:</strong> ${status}</p>
+                `;
+            })
+            .catch(error => {
+                console.error('Error loading ticket details:', error);
+                const ticketDetail = document.getElementById('ticket-detail');
+                ticketDetail.innerHTML = `<p style="color: red;">Failed to load ticket details. Error: ${error.message}</p>`;
+            });
+
+        // Handle ticket cancellation
+        document.getElementById('cancel-ticket').addEventListener('click', () => {
+            fetch(`/api/tickets/${ticketId}/cancel`, {
+                method: 'PUT', // Changed to PUT as per typical REST practices for updates
+                headers: {
+                    'Authorization': `Bearer ${localStorage.getItem('jwtToken')}`
+                }
+            })
+            .then(response => {
+                if (response.ok) {
+                    alert('Ticket cancelled successfully');
+                    window.location.href = '/tickets';
+                } else {
+                    alert('Failed to cancel ticket');
+                }
+            })
+            .catch(error => {
+                console.error('Error cancelling ticket:', error);
+                alert('Error cancelling ticket. Please try again later.');
+            });
+        });
+    </script>
+</body>
+</html> 
+

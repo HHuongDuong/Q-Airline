@@ -13,16 +13,19 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.Map;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 @Component
 public class JwtTokenProvider {
 
-    @Value("${jwt.secret}")
-    private String secret;
+    private final String secret;
+    private final Long expiration;
 
-    @Value("${jwt.expiration}")
-    private Long expiration;
+    // Sử dụng constructor injection để tiêm các giá trị từ application.properties
+    public JwtTokenProvider(@Value("${jwt.secret}") String secret,
+                            @Value("${jwt.expiration}") Long expiration) {
+        this.secret = secret;
+        this.expiration = expiration;
+    }
 
     private Key getSigningKey() {
         byte[] keyBytes = secret.getBytes();
@@ -31,9 +34,8 @@ public class JwtTokenProvider {
 
     public String generateToken(UserDetails userDetails) {
         Map<String, Object> claims = new HashMap<>();
-        claims.put("roles", userDetails.getAuthorities().stream()
-                .map(grantedAuthority -> grantedAuthority.getAuthority())
-                .collect(Collectors.toList()));
+        // Bạn có thể thêm vai trò (roles) vào claims nếu cần
+        // claims.put("roles", userDetails.getAuthorities().stream().map(GrantedAuthority::getAuthority).collect(Collectors.toList()));
         return createToken(claims, userDetails.getUsername());
     }
 
@@ -42,6 +44,7 @@ public class JwtTokenProvider {
                 .setClaims(claims)
                 .setSubject(subject)
                 .setIssuedAt(new Date(System.currentTimeMillis()))
+                // Expiration time is in milliseconds, jwt.expiration is in seconds, so multiply by 1000
                 .setExpiration(new Date(System.currentTimeMillis() + expiration * 1000))
                 .signWith(getSigningKey(), SignatureAlgorithm.HS256)
                 .compact();
@@ -81,7 +84,9 @@ public class JwtTokenProvider {
                     .parseClaimsJws(token);
             return !isTokenExpired(token);
         } catch (Exception e) {
+            // Log the exception for debugging, but return false for invalid token
+            System.err.println("JWT validation failed: " + e.getMessage());
             return false;
         }
     }
-} 
+}

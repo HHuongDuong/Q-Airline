@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - Q-Airline</title>
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="css/brand.css">
+    <link rel="stylesheet" href="/css/brand.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
         .login-container {
@@ -143,18 +143,18 @@
     <!-- Navigation -->
     <nav class="qa-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <a class="navbar-brand" href="index.">Q-Airline</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="flights.html">Flights</a></li>
-                    <li><a href="tickets.html">My Tickets</a></li>
-                    <li><a href="news.html">News</a></li>
-                    <li><a class="active" href="login.html">Login</a></li>
-                    <li><a href="register.html">Register</a></li>
+                    <li><a href="index">Home</a></li>
+                    <li><a href="flights">Flights</a></li>
+                    <li><a href="tickets">My Tickets</a></li>
+                    <li><a href="news">News</a></li>
+                    <li><a class="active" href="login">Login</a></li>
+                    <li><a href="register">Register</a></li>
                 </ul>
             </div>
         </div>
@@ -182,7 +182,7 @@
             </button>
         </form>
         <div class="register-link">
-            <p>Don't have an account? <a href="register.html">Create one now</a></p>
+            <p>Don't have an account? <a href="register">Create one now</a></p>
         </div>
     </div>
 
@@ -287,11 +287,11 @@
                             }
                             setTimeout(() => {
                                 if (data.role === 'ADMIN') {
-                                    window.location.href = 'admin/admin.html';
+                                    window.location.href = 'admin/admin';
                                 } else if (data.role === 'USER') {
-                                    window.location.href = 'index.html';
+                                    window.location.href = 'index';
                                 } else {
-                                    window.location.href = 'index.html';
+                                    window.location.href = 'index';
                                 }
                             }, 1000); // Redirect after 1s
                         } else {

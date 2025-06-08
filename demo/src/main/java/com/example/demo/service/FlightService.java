@@ -6,6 +6,8 @@ import com.example.demo.enums.FlightStatus;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.Optional;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 
 public interface FlightService {
     Flight createFlight(Flight flight);
@@ -14,6 +16,7 @@ public interface FlightService {
     Optional<Flight> getFlightById(Long id);
     Optional<Flight> getFlightByFlightNumber(String flightNumber);
     List<Flight> getAllFlights();
+    Page<Flight> getAllFlights(Pageable pageable);
     List<Flight> getFlightsByAircraft(Aircraft aircraft);
     List<Flight> getFlightsByStatus(FlightStatus status);
     List<Flight> searchFlights(String departureCity, String arrivalCity, LocalDateTime start, LocalDateTime end);

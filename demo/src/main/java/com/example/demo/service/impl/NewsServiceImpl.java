@@ -1,6 +1,7 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.NewsDTO;
+import com.example.demo.dto.NewsRequestDTO;
+import com.example.demo.dto.NewsResponseDTO;
 import com.example.demo.entity.News;
 import com.example.demo.entity.User;
 import com.example.demo.repository.NewsRepository;
@@ -14,9 +15,11 @@ import org.springframework.transaction.annotation.Transactional;
 import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional
 public class NewsServiceImpl implements NewsService {
     private static final String NEWS_NOT_FOUND = "News not found";
     private final NewsRepository newsRepository;
@@ -24,51 +27,58 @@ public class NewsServiceImpl implements NewsService {
 
     @Override
     @Transactional
-    public NewsDTO createNews(NewsDTO newsDTO, User author) {
+    public NewsResponseDTO createNews(NewsRequestDTO newsRequestDTO) {
         News news = new News();
-        news.setTitle(newsDTO.getTitle());
-        news.setContent(newsDTO.getContent());
-        news.setType(newsDTO.getType());
+        news.setTitle(newsRequestDTO.getTitle());
+        news.setContent(newsRequestDTO.getContent());
+        news.setImageUrl(newsRequestDTO.getImageUrl());
+        // Default values, can be made configurable or part of DTO if needed
+        news.setType("NEWS"); 
         news.setPublishDate(LocalDateTime.now());
-        news.setExpiryDate(newsDTO.getExpiryDate());
+        news.setExpiryDate(LocalDateTime.now().plusYears(1)); // Example: expires in 1 year
         news.setActive(true);
-        news.setCreatedBy(author);
+        // Assign current logged-in user as author if applicable, otherwise handle null
+        User currentUser = userService.getCurrentUser(); 
+        news.setCreatedBy(currentUser);
         
         News savedNews = newsRepository.save(news);
-        return convertToDTO(savedNews);
+        return convertToDto(savedNews);
     }
 
     @Override
     @Transactional(readOnly = true)
-    public List<NewsDTO> getAllActiveNews() {
+    public List<NewsResponseDTO> getAllActiveNews() {
         return newsRepository.findByActiveTrueOrderByPublishDateDesc()
                 .stream()
-                .map(this::convertToDTO)
+                .map(this::convertToDto)
                 .collect(Collectors.toList());
     }
 
     @Override
     @Transactional(readOnly = true)
-    public NewsDTO getNewsById(Long id) {
+    public NewsResponseDTO getNewsById(Long id) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(NEWS_NOT_FOUND));
-        return convertToDTO(news);
+        return convertToDto(news);
     }
 
     @Override
     @Transactional
-    public NewsDTO updateNews(Long id, NewsDTO newsDTO) {
+    public NewsResponseDTO updateNews(Long id, NewsRequestDTO newsRequestDTO) {
         News news = newsRepository.findById(id)
                 .orElseThrow(() -> new ResourceNotFoundException(NEWS_NOT_FOUND));
         
-        news.setTitle(newsDTO.getTitle());
-        news.setContent(newsDTO.getContent());
-        news.setType(newsDTO.getType());
-        news.setExpiryDate(newsDTO.getExpiryDate());
-        news.setActive(newsDTO.isActive());
+        news.setTitle(newsRequestDTO.getTitle());
+        news.setContent(newsRequestDTO.getContent());
+        news.setImageUrl(newsRequestDTO.getImageUrl());
+        // Update other fields if necessary
+        // news.setType(newsRequestDTO.getType());
+        // news.setPublishDate(newsRequestDTO.getPublishDate());
+        // news.setExpiryDate(newsRequestDTO.getExpiryDate());
+        // news.setActive(newsRequestDTO.isActive());
         
         News updatedNews = newsRepository.save(news);
-        return convertToDTO(updatedNews);
+        return convertToDto(updatedNews);
     }
 
     @Override
@@ -80,6 +90,7 @@ public class NewsServiceImpl implements NewsService {
         newsRepository.deleteById(id);
     }
 
+    // Keep these methods if still needed for other functionalities that use raw News entity
     @Override
     @Transactional(readOnly = true)
     public List<News> getAllNews() {
@@ -131,19 +142,14 @@ public class NewsServiceImpl implements NewsService {
         return newsRepository.findByCreatedBy_Id(userId);
     }
 
-    private NewsDTO convertToDTO(News news) {
-        NewsDTO dto = new NewsDTO();
+    private NewsResponseDTO convertToDto(News news) {
+        NewsResponseDTO dto = new NewsResponseDTO();
         dto.setId(news.getId());
         dto.setTitle(news.getTitle());
         dto.setContent(news.getContent());
-        dto.setType(news.getType());
-        dto.setPublishDate(news.getPublishDate());
-        dto.setExpiryDate(news.getExpiryDate());
-        dto.setActive(news.isActive());
-        if (news.getCreatedBy() != null) {
-            dto.setAuthorId(news.getCreatedBy().getId());
-            dto.setAuthorName(news.getCreatedBy().getFullName());
-        }
+        dto.setImageUrl(news.getImageUrl());
+        dto.setCreatedAt(news.getCreatedAt());
+        dto.setUpdatedAt(news.getUpdatedAt());
         return dto;
     }
 } 

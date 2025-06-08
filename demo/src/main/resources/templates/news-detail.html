@@ -187,14 +187,14 @@
     <!-- Navigation -->
     <nav class="qa-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <a class="navbar-brand" href="index.">Q-Airline</a>
             <ul class="nav-links">
-                <li><a href="index.html">Home</a></li>
-                <li><a href="flights.html">Flights</a></li>
-                <li><a href="tickets.html">My Tickets</a></li>
-                <li><a class="active" href="news.html">News</a></li>
-                <li><a href="login.html">Login</a></li>
-                <li><a href="register.html">Register</a></li>
+                <li><a href="index">Home</a></li>
+                <li><a href="flights">Flights</a></li>
+                <li><a href="tickets">My Tickets</a></li>
+                <li><a class="active" href="news">News</a></li>
+                <li><a href="login">Login</a></li>
+                <li><a href="register">Register</a></li>
             </ul>
         </div>
     </nav>
@@ -307,7 +307,7 @@
                     </div>
                     <div class="article-tags">
                         ${article.tags.map(tag => `
-                            <a href="news.html?tag=${tag}" class="tag">#${tag}</a>
+                            <a href="news?tag=${tag}" class="tag">#${tag}</a>
                         `).join('')}
                     </div>
                 `;

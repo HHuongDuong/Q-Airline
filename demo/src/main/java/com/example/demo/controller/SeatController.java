@@ -1,13 +1,16 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.SeatMapDTO;
+import com.example.demo.dto.SeatRequestDTO;
 import com.example.demo.dto.SeatSearchCriteria;
 import com.example.demo.entity.Seat;
 import com.example.demo.entity.Flight;
+import com.example.demo.entity.Aircraft;
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
 import com.example.demo.service.SeatService;
 import com.example.demo.service.FlightService;
+import com.example.demo.service.AircraftService;
 import com.example.demo.exception.BadRequestException;
 import com.example.demo.exception.ResourceNotFoundException;
 import io.swagger.v3.oas.annotations.Operation;
@@ -37,6 +40,8 @@ public class SeatController {
 
     private final FlightService flightService;
 
+    private final AircraftService aircraftService;
+
     @GetMapping
     @Operation(summary = "Get all seats", description = "Retrieves a list of all seats")
     @ApiResponses(value = {
@@ -45,6 +50,7 @@ public class SeatController {
         @ApiResponse(responseCode = "401", description = "Unauthorized"),
         @ApiResponse(responseCode = "403", description = "Forbidden")
     })
+    @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<List<Seat>> getAllSeats() {
         return ResponseEntity.ok(seatService.getAllSeats());
     }
@@ -76,7 +82,34 @@ public class SeatController {
     @PreAuthorize("hasRole('ADMIN')")
     public ResponseEntity<Seat> createSeat(
             @Parameter(description = "Seat details", required = true)
-            @Valid @RequestBody Seat seat) {
+            @Valid @RequestBody SeatRequestDTO seatRequestDTO) {
+        Flight flight = flightService.getFlightById(seatRequestDTO.getFlightId())
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + seatRequestDTO.getFlightId()));
+        
+        Aircraft aircraft = aircraftService.getAircraftById(seatRequestDTO.getAircraftId())
+                .orElseThrow(() -> new ResourceNotFoundException("Aircraft not found with id: " + seatRequestDTO.getAircraftId()));
+        
+        int columnNumber;
+        try {
+            columnNumber = Integer.parseInt(seatRequestDTO.getColumn());
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Column number must be a valid integer");
+        }
+        
+        Seat seat = new Seat();
+        seat.setSeatNumber(seatRequestDTO.getSeatNumber());
+        seat.setSeatType(seatRequestDTO.getSeatType());
+        seat.setStatus(seatRequestDTO.getStatus());
+        seat.setPrice(seatRequestDTO.getPrice());
+        seat.setHasExtraLegroom(seatRequestDTO.getHasExtraLegroom());
+        seat.setIsEmergencyExit(seatRequestDTO.getIsEmergencyExit());
+        seat.setIsBulkhead(seatRequestDTO.getIsBulkhead());
+        seat.setRow(seatRequestDTO.getRow());
+        seat.setColumn(columnNumber);
+        seat.setNotes(seatRequestDTO.getNotes());
+        seat.setFlight(flight);
+        seat.setAircraft(aircraft);
+        
         return new ResponseEntity<>(seatService.createSeat(seat), HttpStatus.CREATED);
     }
 
@@ -95,7 +128,34 @@ public class SeatController {
             @Parameter(description = "ID of the seat to update", required = true)
             @PathVariable Long id,
             @Parameter(description = "Updated seat details", required = true)
-            @Valid @RequestBody Seat seat) {
+            @Valid @RequestBody SeatRequestDTO seatRequestDTO) {
+        Flight flight = flightService.getFlightById(seatRequestDTO.getFlightId())
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with id: " + seatRequestDTO.getFlightId()));
+        
+        Aircraft aircraft = aircraftService.getAircraftById(seatRequestDTO.getAircraftId())
+                .orElseThrow(() -> new ResourceNotFoundException("Aircraft not found with id: " + seatRequestDTO.getAircraftId()));
+        
+        int columnNumber;
+        try {
+            columnNumber = Integer.parseInt(seatRequestDTO.getColumn());
+        } catch (NumberFormatException e) {
+            throw new BadRequestException("Column number must be a valid integer");
+        }
+        
+        Seat seat = new Seat();
+        seat.setSeatNumber(seatRequestDTO.getSeatNumber());
+        seat.setSeatType(seatRequestDTO.getSeatType());
+        seat.setStatus(seatRequestDTO.getStatus());
+        seat.setPrice(seatRequestDTO.getPrice());
+        seat.setHasExtraLegroom(seatRequestDTO.getHasExtraLegroom());
+        seat.setIsEmergencyExit(seatRequestDTO.getIsEmergencyExit());
+        seat.setIsBulkhead(seatRequestDTO.getIsBulkhead());
+        seat.setRow(seatRequestDTO.getRow());
+        seat.setColumn(columnNumber);
+        seat.setNotes(seatRequestDTO.getNotes());
+        seat.setFlight(flight);
+        seat.setAircraft(aircraft);
+        
         return ResponseEntity.ok(seatService.updateSeat(id, seat));
     }
 
@@ -367,5 +427,58 @@ public class SeatController {
             @Parameter(description = "ID of the seat to unblock", required = true)
             @PathVariable Long id) {
         return ResponseEntity.ok(seatService.unblockSeat(id));
+    }
+
+    @PutMapping("/{id}/status")
+    @Operation(summary = "Update seat status", description = "Updates the status of a seat")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully updated seat status",
+            content = @Content(schema = @Schema(implementation = Seat.class))),
+        @ApiResponse(responseCode = "400", description = "Invalid status"),
+        @ApiResponse(responseCode = "404", description = "Seat not found"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Seat> updateSeatStatus(
+            @Parameter(description = "ID of the seat to update", required = true)
+            @PathVariable Long id,
+            @Parameter(description = "New status", required = true)
+            @RequestParam SeatStatus status) {
+        return ResponseEntity.ok(seatService.updateSeatStatus(id, status));
+    }
+
+    @PostMapping("/{id}/maintenance")
+    @Operation(summary = "Put seat in maintenance", description = "Puts a seat in maintenance mode")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully put seat in maintenance",
+            content = @Content(schema = @Schema(implementation = Seat.class))),
+        @ApiResponse(responseCode = "404", description = "Seat not found"),
+        @ApiResponse(responseCode = "400", description = "Seat cannot be put in maintenance"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Seat> putSeatInMaintenance(
+            @Parameter(description = "ID of the seat to put in maintenance", required = true)
+            @PathVariable Long id) {
+        return ResponseEntity.ok(seatService.putSeatInMaintenance(id));
+    }
+
+    @PostMapping("/{id}/release")
+    @Operation(summary = "Release a seat", description = "Releases a seat from maintenance or blocked status")
+    @ApiResponses(value = {
+        @ApiResponse(responseCode = "200", description = "Successfully released the seat",
+            content = @Content(schema = @Schema(implementation = Seat.class))),
+        @ApiResponse(responseCode = "404", description = "Seat not found"),
+        @ApiResponse(responseCode = "400", description = "Seat cannot be released"),
+        @ApiResponse(responseCode = "401", description = "Unauthorized"),
+        @ApiResponse(responseCode = "403", description = "Forbidden")
+    })
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Seat> releaseSeat(
+            @Parameter(description = "ID of the seat to release", required = true)
+            @PathVariable Long id) {
+        return ResponseEntity.ok(seatService.releaseSeat(id));
     }
 } 

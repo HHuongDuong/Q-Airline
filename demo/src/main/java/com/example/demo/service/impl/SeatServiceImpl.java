@@ -1,21 +1,23 @@
 package com.example.demo.service.impl;
 
-import com.example.demo.dto.SeatDTO;
 import com.example.demo.dto.SeatMapDTO;
 import com.example.demo.dto.SeatSearchCriteria;
 import com.example.demo.entity.Flight;
 import com.example.demo.entity.Seat;
+import com.example.demo.entity.Aircraft;
 import com.example.demo.enums.SeatStatus;
 import com.example.demo.enums.SeatType;
 import com.example.demo.exception.ResourceNotFoundException;
 import com.example.demo.repository.FlightRepository;
 import com.example.demo.repository.SeatRepository;
+import com.example.demo.repository.AircraftRepository;
 import com.example.demo.service.SeatService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 @Service
@@ -25,6 +27,8 @@ public class SeatServiceImpl implements SeatService {
 
     private static final String SEAT_NOT_FOUND = "Seat not found";
     private final SeatRepository seatRepository;
+    private final FlightRepository flightRepository;
+    private final AircraftRepository aircraftRepository;
 
     @Override
     public Seat blockSeat(Long seatId) {
@@ -40,6 +44,69 @@ public class SeatServiceImpl implements SeatService {
                 .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
         seat.setStatus(SeatStatus.AVAILABLE);
         return seatRepository.save(seat);
+    }
+
+    @Override
+    public List<Seat> getAllSeats() {
+        return seatRepository.findAll();
+    }
+
+    @Override
+    public Seat getSeatById(Long id) {
+        return seatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
+    }
+
+    @Override
+    public Seat createSeat(Seat seat) {
+        // Fetch Flight and Aircraft entities based on IDs provided in the seat object
+        Flight flight = flightRepository.findById(seat.getFlight().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Flight not found with ID: " + seat.getFlight().getId()));
+        Aircraft aircraft = aircraftRepository.findById(seat.getAircraft().getId())
+                .orElseThrow(() -> new ResourceNotFoundException("Aircraft not found with ID: " + seat.getAircraft().getId()));
+
+        seat.setFlight(flight);
+        seat.setAircraft(aircraft);
+        return seatRepository.save(seat);
+    }
+
+    @Override
+    public Seat updateSeat(Long id, Seat seatDetails) {
+        Seat seat = seatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
+
+        // Update fields
+        seat.setSeatNumber(seatDetails.getSeatNumber());
+        seat.setSeatType(seatDetails.getSeatType());
+        seat.setStatus(seatDetails.getStatus());
+        seat.setPrice(seatDetails.getPrice());
+        seat.setHasExtraLegroom(seatDetails.getHasExtraLegroom());
+        seat.setIsEmergencyExit(seatDetails.getIsEmergencyExit());
+        seat.setIsBulkhead(seatDetails.getIsBulkhead());
+        seat.setRow(seatDetails.getRow());
+        seat.setColumn(seatDetails.getColumn());
+        seat.setNotes(seatDetails.getNotes());
+
+        // Update Flight and Aircraft if provided
+        if (seatDetails.getFlight() != null && seatDetails.getFlight().getId() != null) {
+            Flight flight = flightRepository.findById(seatDetails.getFlight().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Flight not found with ID: " + seatDetails.getFlight().getId()));
+            seat.setFlight(flight);
+        }
+        if (seatDetails.getAircraft() != null && seatDetails.getAircraft().getId() != null) {
+            Aircraft aircraft = aircraftRepository.findById(seatDetails.getAircraft().getId())
+                    .orElseThrow(() -> new ResourceNotFoundException("Aircraft not found with ID: " + seatDetails.getAircraft().getId()));
+            seat.setAircraft(aircraft);
+        }
+
+        return seatRepository.save(seat);
+    }
+
+    @Override
+    public void deleteSeat(Long id) {
+        Seat seat = seatRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
+        seatRepository.delete(seat);
     }
 
     @Override
@@ -85,19 +152,6 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public List<Seat> searchSeats(SeatSearchCriteria criteria) {
-        return seatRepository.searchSeats(
-                criteria.getFlightId(),
-                criteria.getSeatType(),
-                criteria.getStatus(),
-                criteria.getMinPrice(),
-                criteria.getMaxPrice(),
-                criteria.getHasExtraLegroom(),
-                criteria.getIsEmergencyExit()
-        );
-    }
-
-    @Override
     public List<SeatMapDTO> getSeatMap(Long flightId) {
         List<Seat> seats = seatRepository.findByFlight_Id(flightId);
         return seats.stream()
@@ -108,7 +162,7 @@ public class SeatServiceImpl implements SeatService {
     @Override
     public List<SeatMapDTO> getSeatMapWithSelectedSeats(Long flightId, List<String> selectedSeatNumbers) {
         List<SeatMapDTO> seatMap = getSeatMap(flightId);
-        seatMap.forEach(seat -> 
+        seatMap.forEach(seat ->
             seat.setSelected(selectedSeatNumbers.contains(seat.getSeatNumber()))
         );
         return seatMap;
@@ -198,55 +252,42 @@ public class SeatServiceImpl implements SeatService {
     }
 
     @Override
-    public List<Seat> getAllSeats() {
-        return seatRepository.findAll();
-    }
-
-    @Override
-    public Seat createSeat(Seat seat) {
-        return seatRepository.save(seat);
-    }
-
-    @Override
-    public Seat updateSeat(Long seatId, Seat seat) {
-        Seat existingSeat = seatRepository.findById(seatId)
-                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
-        seat.setId(existingSeat.getId());
-        return seatRepository.save(seat);
-    }
-
-    @Override
-    public void deleteSeat(Long seatId) {
-        if (!seatRepository.existsById(seatId)) {
-            throw new ResourceNotFoundException(SEAT_NOT_FOUND);
-        }
-        seatRepository.deleteById(seatId);
-    }
-
-    @Override
     public Seat putSeatInMaintenance(Long seatId) {
-        return updateSeatStatus(seatId, SeatStatus.MAINTENANCE);
+        Seat seat = seatRepository.findById(seatId)
+                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
+        seat.setStatus(SeatStatus.MAINTENANCE);
+        return seatRepository.save(seat);
     }
 
     @Override
-    public Seat getSeatById(Long seatId) {
-        return seatRepository.findById(seatId)
-                .orElseThrow(() -> new ResourceNotFoundException(SEAT_NOT_FOUND));
+    public List<Seat> searchSeats(SeatSearchCriteria criteria) {
+        return seatRepository.searchSeats(
+                criteria.getFlightId(),
+                criteria.getSeatType(),
+                criteria.getStatus(),
+                criteria.getMinPrice(),
+                criteria.getMaxPrice(),
+                criteria.getHasExtraLegroom(),
+                criteria.getIsEmergencyExit()
+        );
     }
 
     private SeatMapDTO convertToSeatMapDTO(Seat seat) {
-        SeatMapDTO dto = new SeatMapDTO();
-        dto.setId(seat.getId());
-        dto.setFlightId(seat.getFlight().getId());
-        dto.setSeatNumber(seat.getSeatNumber());
-        dto.setSeatType(seat.getSeatType());
-        dto.setStatus(seat.getStatus());
-        dto.setPrice(seat.getPrice());
-        dto.setHasExtraLegroom(seat.getHasExtraLegroom());
-        dto.setIsEmergencyExit(seat.getIsEmergencyExit());
-        dto.setRow(seat.getRow());
-        dto.setColumn(seat.getColumn());
-        dto.setSelected(false);
-        return dto;
+        return new SeatMapDTO(
+                seat.getId(),
+                seat.getSeatNumber(),
+                seat.getSeatType(),
+                seat.getStatus(),
+                seat.getPrice(),
+                seat.getHasExtraLegroom(),
+                seat.getIsEmergencyExit(),
+                seat.getIsBulkhead(),
+                seat.getRow(),
+                seat.getColumn(),
+                seat.getNotes(),
+                seat.getFlight() != null ? seat.getFlight().getId() : null,
+                seat.getAircraft() != null ? seat.getAircraft().getId() : null,
+                false // selected field, default to false
+        );
     }
-} 
+}
