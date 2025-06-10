@@ -168,4 +168,18 @@ public class TicketServiceImpl implements TicketService {
 
         return dto;
     }
+
+    @Override
+    public long countAllTickets() {
+        return ticketRepository.count();
+    }
+
+    @Override
+    public double getTotalRevenue() {
+        return ticketRepository.findAll().stream()
+                .filter(ticket -> ticket.getStatus() == TicketStatus.CONFIRMED)
+                .mapToDouble(Ticket::getPrice)
+                .sum();
+    }
+
 } 

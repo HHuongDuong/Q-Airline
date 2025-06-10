@@ -171,4 +171,9 @@ public class UserServiceImpl implements UserService {
         return userRepository.findByUsername(username)
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with username: " + username));
     }
+
+    @Override
+    public long countAllUsers() {
+        return userRepository.count();
+    }
 } 

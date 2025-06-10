@@ -20,10 +20,10 @@ public class DashboardController {
 
     private final DashboardService dashboardService;
 
-    @GetMapping("/stats")
-    public ResponseEntity<DashboardStats> getLatestStats() {
-        return ResponseEntity.ok(dashboardService.getLatestStats());
-    }
+    // @GetMapping("/stats")
+    // public ResponseEntity<DashboardStats> getLatestStats() {
+    //     return ResponseEntity.ok(dashboardService.getLatestStats());
+    // }
 
     @GetMapping("/stats/date-range")
     public ResponseEntity<List<DashboardStats>> getStatsByDateRange(
@@ -38,15 +38,15 @@ public class DashboardController {
         return ResponseEntity.ok(dashboardService.getStatsFromDate(date));
     }
 
-    @GetMapping("/revenue-stats")
-    public ResponseEntity<Double> getTotalRevenue(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        if (start != null && end != null) {
-            return ResponseEntity.ok(dashboardService.getTotalRevenueByDateRange(start, end));
-        }
-        return ResponseEntity.ok(dashboardService.getTotalRevenue());
-    }
+    // @GetMapping("/revenue-stats")
+    // public ResponseEntity<Double> getTotalRevenue(
+    //         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
+    //         @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
+    //     if (start != null && end != null) {
+    //         return ResponseEntity.ok(dashboardService.getTotalRevenueByDateRange(start, end));
+    //     }
+    //     return ResponseEntity.ok(dashboardService.getTotalRevenue());
+    // }
 
     @GetMapping("/bookings")
     public ResponseEntity<Long> getTotalBookings(
@@ -66,16 +66,6 @@ public class DashboardController {
             return ResponseEntity.ok(dashboardService.getTotalCancellationsByDateRange(start, end));
         }
         return ResponseEntity.ok(dashboardService.getTotalCancellations());
-    }
-
-    @GetMapping("/flight-stats")
-    public ResponseEntity<Map<String, Long>> getFlightStats(
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime start,
-            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE_TIME) LocalDateTime end) {
-        if (start != null && end != null) {
-            return ResponseEntity.ok(dashboardService.getFlightStatsByDateRange(start, end));
-        }
-        return ResponseEntity.ok(dashboardService.getFlightStats());
     }
 
     @GetMapping("/passengers")

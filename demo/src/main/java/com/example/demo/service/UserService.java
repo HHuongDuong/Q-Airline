@@ -26,4 +26,5 @@ public interface UserService extends UserDetailsService {
     Optional<User> getUserByEmail(String email);
     List<User> getUsersByRole(String role);
     User updateUserDetails(Long userId, UserDetailsDTO userDetails);
+    long countAllUsers();
 } 

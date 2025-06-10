@@ -89,4 +89,10 @@ public class FlightServiceImpl implements FlightService {
         flight.setStatus(status);
         return flightRepository.save(flight);
     }
+
+    @Override
+    @Transactional(readOnly = true)
+    public long countAllFlights() {
+        return flightRepository.count();
+    }
 } 

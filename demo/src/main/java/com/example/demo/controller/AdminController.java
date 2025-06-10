@@ -43,6 +43,8 @@ import org.springframework.security.core.Authentication;
 import org.springframework.security.core.context.SecurityContextHolder;
 import java.util.List;
 import java.util.stream.Collectors;
+import java.util.Map;
+import java.util.HashMap;
 
 @Controller
 @RequiredArgsConstructor
@@ -504,5 +506,35 @@ public class AdminController {
         }
         return "admin/admin-edit-seat";
     }
-    
+
+    @GetMapping("/api/admin/flight-stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, List<?>>> getFlightStats() {
+        Map<String, List<?>> stats = new HashMap<>();
+        // Placeholder data for demonstration. Replace with actual flight stats logic.
+        stats.put("labels", List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"));
+        stats.put("values", List.of(10, 20, 15, 25, 22, 30));
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/api/admin/revenue-stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, List<?>>> getRevenueStats() {
+        Map<String, List<?>> stats = new HashMap<>();
+        // Placeholder data for demonstration. Replace with actual revenue stats logic.
+        stats.put("labels", List.of("Jan", "Feb", "Mar", "Apr", "May", "Jun"));
+        stats.put("values", List.of(50000, 75000, 60000, 90000, 85000, 100000));
+        return ResponseEntity.ok(stats);
+    }
+
+    @GetMapping("/api/admin/stats")
+    @PreAuthorize("hasRole('ADMIN')")
+    public ResponseEntity<Map<String, Object>> getOverallStats() {
+        Map<String, Object> stats = new HashMap<>();
+        stats.put("totalFlights", flightService.countAllFlights());
+        stats.put("activeTickets", ticketService.countAllTickets());
+        stats.put("totalUsers", userService.countAllUsers());
+        stats.put("totalRevenue", ticketService.getTotalRevenue());
+        return ResponseEntity.ok(stats);
+    }
 } 

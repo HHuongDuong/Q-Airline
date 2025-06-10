@@ -3,45 +3,95 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>News Article - Q-Airline</title>
-    <link rel="stylesheet" href="css/brand.css">
+    <title>News Detail - Q-Airline</title>
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+    <link rel="stylesheet" href="../css/brand.css">
     <style>
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #f4f6f8;
+            color: var(--qa-text);
+            margin: 0;
+            padding: 0;
+        }
+
+        .qa-navbar {
+            background-color: white;
+            box-shadow: var(--qa-shadow-sm);
+            padding: 1rem 0;
+        }
+
+        .qa-navbar .container {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .navbar-brand {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--qa-primary);
+            text-decoration: none;
+        }
+
+        .nav-links {
+            list-style: none;
+            margin: 0;
+            padding: 0;
+            display: flex;
+            gap: 1.5rem;
+        }
+
+        .nav-links a {
+            color: var(--qa-dark);
+            text-decoration: none;
+            font-weight: 500;
+            transition: color 0.3s ease;
+        }
+
+        .nav-links a:hover,
+        .nav-links a.active {
+            color: var(--qa-primary);
+        }
+
         .article-container {
             max-width: 900px;
-            margin: 4rem auto;
-            padding: var(--qa-spacing-xl);
+            margin: 2rem auto;
+            background-color: white;
+            border-radius: var(--qa-radius-lg);
+            box-shadow: var(--qa-shadow-md);
+            padding: 2rem;
         }
 
         .article-header {
-            margin-bottom: var(--qa-spacing-xl);
+            text-align: center;
+            margin-bottom: 2rem;
         }
 
         .article-category {
             display: inline-block;
-            padding: 0.25rem 0.75rem;
-            background-color: var(--qa-primary);
-            color: white;
-            border-radius: var(--qa-radius-sm);
-            font-size: 0.875rem;
-            font-weight: 500;
-            margin-bottom: var(--qa-spacing-md);
+            background-color: var(--qa-secondary-light);
+            color: var(--qa-secondary-dark);
+            padding: 0.3rem 0.8rem;
+            border-radius: var(--qa-radius-pill);
+            font-size: 0.8rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
         }
 
         .article-title {
             font-size: 2.5rem;
-            font-weight: 700;
             color: var(--qa-primary);
-            margin-bottom: var(--qa-spacing-md);
+            margin-bottom: 1rem;
             line-height: 1.2;
         }
 
         .article-meta {
             display: flex;
-            align-items: center;
-            gap: var(--qa-spacing-lg);
+            justify-content: center;
+            gap: 1.5rem;
             color: var(--qa-gray);
-            font-size: 0.875rem;
-            margin-bottom: var(--qa-spacing-lg);
+            font-size: 0.9rem;
         }
 
         .meta-item {
@@ -50,77 +100,50 @@
             gap: 0.5rem;
         }
 
+        .meta-item svg {
+            width: 1rem;
+            height: 1rem;
+            color: var(--qa-primary);
+        }
+
         .article-image {
             width: 100%;
             height: 400px;
             object-fit: cover;
-            border-radius: var(--qa-radius-lg);
-            margin-bottom: var(--qa-spacing-xl);
-        }
-
-        .article-content {
-            font-size: 1.125rem;
-            line-height: 1.8;
-            color: #333;
+            border-radius: var(--qa-radius-md);
+            margin-bottom: 2rem;
         }
 
         .article-content p {
-            margin-bottom: var(--qa-spacing-lg);
+            line-height: 1.8;
+            margin-bottom: 1.5rem;
+            font-size: 1.1rem;
         }
 
-        .article-content h2 {
-            font-size: 1.75rem;
-            font-weight: 600;
-            color: var(--qa-primary);
-            margin: var(--qa-spacing-xl) 0 var(--qa-spacing-lg);
-        }
-
+        .article-content h2,
         .article-content h3 {
-            font-size: 1.5rem;
-            font-weight: 600;
             color: var(--qa-primary);
-            margin: var(--qa-spacing-lg) 0 var(--qa-spacing-md);
-        }
-
-        .article-content ul, .article-content ol {
-            margin-bottom: var(--qa-spacing-lg);
-            padding-left: var(--qa-spacing-xl);
-        }
-
-        .article-content li {
-            margin-bottom: var(--qa-spacing-sm);
-        }
-
-        .article-content blockquote {
-            border-left: 4px solid var(--qa-primary);
-            padding: var(--qa-spacing-md) var(--qa-spacing-lg);
-            margin: var(--qa-spacing-lg) 0;
-            background-color: #f8f9fa;
-            font-style: italic;
-        }
-
-        .article-content img {
-            max-width: 100%;
-            height: auto;
-            border-radius: var(--qa-radius-md);
-            margin: var(--qa-spacing-lg) 0;
+            margin-top: 2rem;
+            margin-bottom: 1rem;
         }
 
         .article-tags {
-            display: flex;
-            gap: var(--qa-spacing-sm);
-            margin-top: var(--qa-spacing-xl);
-            padding-top: var(--qa-spacing-lg);
+            margin-top: 2rem;
+            padding-top: 1.5rem;
             border-top: 1px solid #eee;
+            display: flex;
+            gap: 0.75rem;
+            flex-wrap: wrap;
         }
 
         .tag {
-            padding: 0.25rem 0.75rem;
-            background-color: #f8f9fa;
-            border-radius: var(--qa-radius-sm);
-            color: var(--qa-gray);
-            font-size: 0.875rem;
+            display: inline-block;
+            background-color: var(--qa-light);
+            color: var(--qa-dark);
+            padding: 0.4rem 0.8rem;
+            border-radius: var(--qa-radius-pill);
             text-decoration: none;
+            font-size: 0.9rem;
             transition: all 0.3s ease;
         }
 
@@ -239,8 +262,27 @@
         const loadingSpinner = document.querySelector('.loading-spinner');
         const errorMessage = document.querySelector('.error-message');
 
+        // Helper function to parse date array (similar to tickets.html)
+        function parseDateArray(dateArray) {
+            if (!dateArray || dateArray.length < 5) {
+                return null;
+            }
+            // Date constructor expects month to be 0-indexed
+            return new Date(dateArray[0], dateArray[1] - 1, dateArray[2], dateArray[3], dateArray[4], dateArray.length > 5 ? dateArray[5] : 0);
+        }
+
         // Format date
-        function formatDate(dateString) {
+        function formatDate(dateValue) {
+            let date;
+            if (Array.isArray(dateValue)) {
+                date = parseDateArray(dateValue);
+            } else {
+                date = new Date(dateValue); // Assume it's a string if not an array
+            }
+
+            if (!date || isNaN(date.getTime())) {
+                return "Invalid Date";
+            }
             const options = { 
                 year: 'numeric', 
                 month: 'long', 
@@ -248,7 +290,7 @@
                 hour: '2-digit',
                 minute: '2-digit'
             };
-            return new Date(dateString).toLocaleDateString('en-US', options);
+            return date.toLocaleDateString('en-US', options);
         }
 
         // Load article
@@ -273,41 +315,52 @@
                 const article = await response.json();
 
                 // Update page title
-                document.title = `${article.title} - Q-Airline`;
+                document.title = `${article.title || 'News'} - Q-Airline`; // Default title if article.title is missing
+
+                // Ensure article properties are not null/undefined for rendering
+                const category = article.category || 'General';
+                const title = article.title || 'No Title';
+                const imageUrl = article.imageUrl || '';
+                const content = article.content || '';
+                const publishDate = article.publishDate ? formatDate(article.publishDate) : 'Invalid Date';
+                const author = article.author || 'Unknown Author';
+                const readingTime = article.readingTime || 0;
+                const tags = Array.isArray(article.tags) ? article.tags : [];
+
 
                 // Render article
                 articleContent.innerHTML = `
                     <div class="article-header">
-                        <span class="article-category">${article.category}</span>
-                        <h1 class="article-title">${article.title}</h1>
+                        <span class="article-category">${category}</span>
+                        <h1 class="article-title">${title}</h1>
                         <div class="article-meta">
                             <div class="meta-item">
                                 <svg class="icon" viewBox="0 0 24 24">
                                     <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.4 0-8-3.6-8-8s3.6-8 8-8 8 3.6 8 8-3.6 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z"/>
                                 </svg>
-                                ${formatDate(article.publishDate)}
+                                ${publishDate}
                             </div>
                             <div class="meta-item">
                                 <svg class="icon" viewBox="0 0 24 24">
                                     <path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/>
                                 </svg>
-                                ${article.author}
+                                ${author}
                             </div>
                             <div class="meta-item">
                                 <svg class="icon" viewBox="0 0 24 24">
                                     <path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zM12 20c-4.42 0-8-3.58-8-8s3.58-8 8-8 8 3.58 8 8-3.58 8-8 8zm.5-13H11v6l5.25 3.15.75-1.23-4.5-2.67z"/>
                                 </svg>
-                                ${article.readingTime} min read
+                                ${readingTime} min read
                             </div>
                         </div>
                     </div>
-                    <img src="${article.imageUrl}" alt="${article.title}" class="article-image">
+                    <img src="${imageUrl}" alt="${title}" class="article-image">
                     <div class="article-content">
-                        ${article.content}
+                        ${content}
                     </div>
                     <div class="article-tags">
-                        ${article.tags.map(tag => `
-                            <a href="news?tag=${tag}" class="tag">#${tag}</a>
+                        ${tags.map(tag => `
+                            <a href="news?tag=${encodeURIComponent(tag)}" class="tag">#${tag}</a>
                         `).join('')}
                     </div>
                 `;
@@ -323,4 +376,4 @@
         loadArticle();
     </script>
 </body>
-</html> 
+</html>

@@ -21,4 +21,5 @@ public interface FlightService {
     List<Flight> getFlightsByStatus(FlightStatus status);
     List<Flight> searchFlights(String departureCity, String arrivalCity, LocalDateTime start, LocalDateTime end);
     Flight updateFlightStatus(Long id, FlightStatus status);
+    long countAllFlights();
 } 

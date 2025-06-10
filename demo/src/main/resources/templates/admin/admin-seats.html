@@ -8,28 +8,59 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
 </head>
 <body>
-    <!-- Navigation -->
-    <nav class="qa-navbar">
-        <div class="container">
-            <a class="navbar-brand" href="/admin/dashboard">Admin Dashboard</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="nav-links">
-                    <li><a href="/admin/dashboard">Dashboard</a></li>
-                    <li><a href="/admin/admin-flights">Flights</a></li>
-                    <li><a class="active" href="/admin/admin-seats">Seats</a></li>
-                    <li><a href="/admin/admin-tickets">Tickets</a></li>
-                    <li><a href="/admin/admin-users">Users</a></li>
-                    <li><a href="/admin/admin-news">News</a></li>
-                    <li><a href="/admin/delays">Delays</a></li>
-                    <li><a href="/admin/admin-aircraft">Aircraft</a></li>
-                    <li><a href="#" id="logoutLink">Logout</a></li>
-                </ul>
+    <!-- Sidebar -->
+        <aside class="sidebar">
+            <div class="sidebar-header">
+                <h2>Q-Airline Admin</h2>
             </div>
-        </div>
-    </nav>
+            <ul class="nav-menu">
+                <li class="nav-item">
+                    <a href="/admin/dashboard" class="nav-link active">
+                        Dashboard
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-flights" class="nav-link">
+                        Flights
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-seats" class="nav-link">
+                        Seats
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-tickets" class="nav-link">
+                        Tickets
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-users" class="nav-link">
+                        Users
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/admin-news" class="nav-link">
+                        News
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="/admin/delays" class="nav-link">
+                        Delays
+                    </a>
+                </li>
+                 <li class="nav-item">
+                    <a href="/admin/admin-aircraft" class="nav-link">
+                        Aircraft
+                    </a>
+                </li>
+                <li class="nav-item">
+                    <a href="#" class="nav-link" id="logoutLink">
+                        Logout
+                    </a>
+                </li>
+            </ul>
+        </aside>
 
     <!-- Page Content -->
     <div class="admin-container">

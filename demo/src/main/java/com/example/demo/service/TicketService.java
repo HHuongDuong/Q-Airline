@@ -24,4 +24,6 @@ public interface TicketService {
     Ticket cancelTicket(Long id);
     Ticket updateTicketStatus(Long ticketId, TicketStatus status);
     boolean isTicketAvailable(Long ticketId);
+    long countAllTickets();
+    double getTotalRevenue();
 }

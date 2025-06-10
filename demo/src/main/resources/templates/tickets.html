@@ -6,6 +6,7 @@
     <title>My Tickets - Q-Airline</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.1.3/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700&family=Poppins:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
     <link rel="stylesheet" href="css/brand.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
     <style>
@@ -242,18 +243,18 @@
     <!-- Navigation -->
     <nav class="qa-navbar">
         <div class="container">
-            <a class="navbar-brand" href="index.html">Q-Airline</a>
+            <a class="navbar-brand" href="index">Q-Airline</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
                 <span class="navbar-toggler-icon"></span>
             </button>
             <div class="collapse navbar-collapse" id="navbarNav">
                 <ul class="nav-links">
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="flights.html">Flights</a></li>
-                    <li><a class="active" href="tickets.html">My Tickets</a></li>
-                    <li><a href="news.html">News</a></li>
-                    <li><a href="login.html">Login</a></li>
-                    <li><a href="register.html">Register</a></li>
+                    <li><a href="index">Home</a></li>
+                    <li><a href="flights">Flights</a></li>
+                    <li><a class="active" href="tickets">My Tickets</a></li>
+                    <li><a href="news">News</a></li>
+                    <li><a href="login">Login</a></li>
+                    <li><a href="register">Register</a></li>
                 </ul>
             </div>
         </div>
@@ -493,7 +494,7 @@
 
         // View ticket details
         function viewTicket(ticketId) {
-            window.location.href = `ticket-detail.html?id=${ticketId}`;
+            window.location.href = `ticket-detail?id=${ticketId}`;
         }
 
         // Cancel ticket
